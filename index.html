@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+    <link rel="icon" type="image/png" href="./favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BorP模擬系統</title>
+    <title>BorP模擬系統 V0.1</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -198,6 +199,22 @@
             gap: 15px;
             border-bottom: 1px solid #2a2a4a;
             flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .button-left-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .button-right-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
         .manual-button-group {
@@ -219,6 +236,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            white-space: nowrap;
         }
 
         .btn-primary {
@@ -459,7 +477,6 @@
         }
 
         .stop-btn-container {
-            margin-left: auto;
             display: none;
         }
 
@@ -475,6 +492,24 @@
             border-top: 1px solid #2a2a4a;
         }
 
+        @media (max-width: 1100px) {
+            .button-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+            
+            .button-left-group,
+            .button-right-group {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .manual-button-group {
+                margin-left: 0;
+            }
+        }
+
         @media (max-width: 768px) {
             .container {
                 border-radius: 8px;
@@ -485,16 +520,25 @@
             }
             
             .button-section {
-                flex-direction: column;
+                gap: 15px;
             }
             
-            .manual-button-group {
-                margin-left: 0;
-                margin-top: 10px;
+            .button-left-group,
+            .button-right-group {
+                flex-direction: column;
+                width: 100%;
             }
             
             .btn {
                 width: 100%;
+                justify-content: center;
+            }
+            
+            .manual-button-group {
+                flex-direction: column;
+                width: 100%;
+                margin-left: 0;
+                margin-top: 10px;
             }
             
             .summary-cards {
@@ -502,8 +546,27 @@
             }
             
             .stop-btn-container {
-                margin-left: 0;
-                margin-top: 10px;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .button-section {
+                padding: 15px 20px;
+            }
+            
+            .button-left-group,
+            .button-right-group {
+                gap: 10px;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            
+            .export-section {
+                flex-direction: column;
             }
         }
     </style>
@@ -511,7 +574,7 @@
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-chart-line"></i> BorP模擬系統</h1>
+            <h1><i class="fas fa-chart-line"></i> BorP模擬系統 V0.1</h1>
             <p class="subtitle">模擬遊戲</p>
         </header>
 
@@ -569,22 +632,33 @@
         </div>
 
         <div class="button-section">
-            <button class="btn btn-primary" id="runSimulationBtn">
-                <i class="fas fa-play-circle"></i> 執行模擬
-            </button>
-            
-            <div class="manual-button-group">
-                <button class="btn btn-pink" id="toggleModeBtn">
-                    <i class="fas fa-exchange-alt"></i> 切換到手動模式
+            <div class="button-left-group">
+                <button class="btn btn-primary" id="runSimulationBtn">
+                    <i class="fas fa-play-circle"></i> 執行模擬
                 </button>
-                <button class="btn btn-secondary" id="resetBtn">
-                    <i class="fas fa-redo"></i> 重置
-                </button>
+                
+                <div class="manual-button-group">
+                    <button class="btn btn-pink" id="toggleModeBtn">
+                        <i class="fas fa-exchange-alt"></i> 切換到手動模式
+                    </button>
+                    <button class="btn btn-secondary" id="resetBtn">
+                        <i class="fas fa-redo"></i> 重置
+                    </button>
+                </div>
+                
+                <div class="stop-btn-container" id="stopBtnContainer">
+                    <button class="btn btn-danger" id="stopSimulationBtn">
+                        <i class="fas fa-stop-circle"></i> 停止模擬
+                    </button>
+                </div>
             </div>
             
-            <div class="stop-btn-container" id="stopBtnContainer">
-                <button class="btn btn-danger" id="stopSimulationBtn">
-                    <i class="fas fa-stop-circle"></i> 停止模擬
+            <div class="button-right-group">
+                <button class="btn btn-warning" id="exportPNGBtn" style="display: none;">
+                    <i class="fas fa-file-image"></i> 匯出為PNG
+                </button>
+                <button class="btn btn-success" id="exportDataBtn">
+                    <i class="fas fa-file-export"></i> 匯出資料
                 </button>
             </div>
         </div>
@@ -626,15 +700,6 @@
                         <!-- 資料將通過JavaScript動態填充 -->
                     </tbody>
                 </table>
-            </div>
-
-            <div class="export-section">
-                <button class="btn btn-warning" id="exportPNGBtn" style="display: none;">
-                    <i class="fas fa-file-image"></i> 匯出為PNG
-                </button>
-                <button class="btn btn-success" id="exportDataBtn">
-                    <i class="fas fa-file-export"></i> 匯出資料
-                </button>
             </div>
         </div>
 
@@ -1702,7 +1767,7 @@
                 multiSimulationCheckbox.checked = formData.multiSimulation || false;
                 simulationTimesInput.value = formData.simulationTimes || '1';
                 simulationTimesInput.style.display = formData.multiSimulation ? 'inline-block' : 'none';
-                manualSequenceTextarea.value = formData.manualSequence || "A\nB\nA\nA\nB\nB\nA\nB\nA\nB\nA\nA\nA\nB\nB";
+                manualSequenceTextarea.value = formData.manualSequence || "";
                 
                 if (savedMode) {
                     switchMode(savedMode);
