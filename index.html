@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投注模擬系統</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e6e6e6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: rgba(25, 25, 40, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            border: 1px solid #2a2a4a;
+        }
+
+        header {
+            background: linear-gradient(90deg, #0f3460, #1a1a2e);
+            padding: 20px 30px;
+            border-bottom: 1px solid #2a2a4a;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            color: #4cc9f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h1 i {
+            font-size: 26px;
+        }
+
+        .subtitle {
+            color: #a0a0c0;
+            font-size: 14px;
+        }
+
+        .mode-selector {
+            display: flex;
+            margin: 20px 0;
+            background-color: #1a1a2e;
+            border-radius: 8px;
+            overflow: hidden;
+            width: fit-content;
+            border: 1px solid #2a2a4a;
+        }
+
+        .mode-btn {
+            padding: 10px 25px;
+            background: transparent;
+            border: none;
+            color: #a0a0c0;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+        .mode-btn.active {
+            color: white;
+        }
+
+        #randomModeBtn.active {
+            background: linear-gradient(90deg, #4361ee, #3a0ca3);
+        }
+
+        #manualModeBtn.active {
+            background: linear-gradient(90deg, #ec4899, #be185d);
+        }
+
+        .mode-btn:hover:not(.active) {
+            background-color: #252542;
+            color: #e6e6e6;
+        }
+
+        .input-section {
+            padding: 0 30px 20px;
+            border-bottom: 1px solid #2a2a4a;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 8px;
+            color: #a0a0c0;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            padding: 12px 15px;
+            background-color: #252542;
+            border: 1px solid #3a3a5a;
+            border-radius: 6px;
+            color: #e6e6e6;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #4361ee;
+            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #4361ee;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+        }
+
+        #simulationTimes {
+            width: 120px;
+            margin-left: 10px;
+        }
+
+        .textarea-group {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .textarea-group.active {
+            display: block;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            background-color: #252542;
+            border: 1px solid #3a3a5a;
+            border-radius: 6px;
+            color: #e6e6e6;
+            font-size: 15px;
+            resize: vertical;
+            font-family: 'Consolas', 'Courier New', monospace;
+            line-height: 1.5;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4361ee;
+            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+        }
+
+        .textarea-note {
+            font-size: 13px;
+            color: #8888aa;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .button-section {
+            padding: 20px 30px;
+            display: flex;
+            gap: 15px;
+            border-bottom: 1px solid #2a2a4a;
+            flex-wrap: wrap;
+        }
+
+        .manual-button-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-left: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #4361ee, #3a0ca3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #3a56d4, #2f0b8a);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-secondary {
+            background-color: #3a3a5a;
+            color: #e6e6e6;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4a4a6a;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: linear-gradient(90deg, #4cc9f0, #4895ef);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(90deg, #3ab5d8, #3884d4);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 201, 240, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: linear-gradient(90deg, #e0900a, #c46c05);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(90deg, #e03c3c, #c72222);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-pink {
+            background: linear-gradient(90deg, #ec4899, #be185d);
+            color: white;
+        }
+
+        .btn-pink:hover {
+            background: linear-gradient(90deg, #e03c8a, #a81752);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4);
+        }
+
+        .results-section {
+            padding: 20px 30px;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background-color: #252542;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #4361ee;
+        }
+
+        .summary-card h3 {
+            font-size: 14px;
+            color: #a0a0c0;
+            margin-bottom: 8px;
+        }
+
+        .summary-card .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #4cc9f0;
+        }
+
+        .summary-card .value.positive {
+            color: #4ade80;
+        }
+
+        .summary-card .value.negative {
+            color: #f87171;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #3a3a5a;
+            margin-bottom: 25px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        thead {
+            background: linear-gradient(90deg, #0f3460, #1a1a2e);
+        }
+
+        th {
+            padding: 15px 12px;
+            text-align: center;
+            font-weight: 600;
+            color: #a0a0c0;
+            border-bottom: 1px solid #3a3a5a;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #2a2a2a;
+            font-size: 14px;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: rgba(37, 37, 66, 0.5);
+        }
+
+        tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+
+        .result-W {
+            color: #4ade80;
+            font-weight: 600;
+        }
+
+        .result-L {
+            color: #f87171;
+            font-weight: 600;
+        }
+
+        .result-A {
+            color: #4cc9f0;
+        }
+
+        .result-B {
+            color: #f59e0b;
+        }
+
+        .export-section {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .message.error {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid #ef4444;
+            color: #f87171;
+            display: flex;
+        }
+
+        .message.success {
+            background-color: rgba(74, 222, 128, 0.1);
+            border-left: 4px solid #4ade80;
+            color: #4ade80;
+            display: flex;
+        }
+
+        .message.info {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid #3b82f6;
+            color: #60a5fa;
+            display: flex;
+        }
+
+        .message.warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid #f59e0b;
+            color: #fbbf24;
+            display: flex;
+        }
+
+        .progress-container {
+            display: none;
+            margin: 20px 0;
+            background-color: #252542;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #3a3a5a;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4cc9f0, #4895ef);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .stop-btn-container {
+            margin-left: auto;
+            display: none;
+        }
+
+        .stop-btn-container.active {
+            display: block;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #8888aa;
+            font-size: 14px;
+            border-top: 1px solid #2a2a4a;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 8px;
+            }
+            
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-section {
+                flex-direction: column;
+            }
+            
+            .manual-button-group {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .stop-btn-container {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-chart-line"></i> 投注模擬系統</h1>
+            <p class="subtitle">基於VBA投注模擬系統的網頁版本 - 實現隨機/手動模擬、資金管理和結果分析</p>
+        </header>
+
+        <div class="input-section">
+            <div class="mode-selector">
+                <button class="mode-btn active" id="randomModeBtn">隨機模擬模式</button>
+                <button class="mode-btn" id="manualModeBtn">手動輸入模式</button>
+            </div>
+
+            <div class="input-grid">
+                <div class="input-group">
+                    <label for="totalRounds" id="totalRoundsLabel">局數</label>
+                    <input type="number" id="totalRounds" value="100" min="1" max="10000">
+                </div>
+                
+                <div class="input-group">
+                    <label for="initialCapital">初始金額</label>
+                    <input type="number" id="initialCapital" value="1000" step="10" min="1">
+                </div>
+                
+                <div class="input-group">
+                    <label for="baseBet">起步注碼</label>
+                    <input type="number" id="baseBet" value="10" min="1">
+                </div>
+                
+                <div class="input-group">
+                    <label for="incrementRate">每2關+？</label>
+                    <input type="number" id="incrementRate" value="5" min="1">
+                </div>
+            </div>
+
+            <div class="checkbox-group" id="multiSimulationGroup">
+                <input type="checkbox" id="multiSimulation">
+                <label for="multiSimulation">N次模擬</label>
+                <input type="number" id="simulationTimes" value="1" min="1" max="1000" style="display: none;">
+            </div>
+
+            <div class="textarea-group" id="manualInputArea">
+                <label for="manualSequence">手動輸入A/B序列（每行一個A或B）</label>
+                <textarea id="manualSequence" placeholder="A&#10;B&#10;A&#10;A&#10;B&#10;B&#10;A"></textarea>
+                <p class="textarea-note">注意：每行只能輸入A或B，其他字元將被忽略</p>
+            </div>
+        </div>
+
+        <div class="message" id="messageBox"></div>
+
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-header">
+                <span>模擬進度</span>
+                <span id="progressText">0/1</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="button-section">
+            <button class="btn btn-primary" id="runSimulationBtn">
+                <i class="fas fa-play-circle"></i> 執行模擬
+            </button>
+            
+            <div class="manual-button-group">
+                <button class="btn btn-pink" id="toggleModeBtn">
+                    <i class="fas fa-exchange-alt"></i> 切換到手動模式
+                </button>
+                <button class="btn btn-secondary" id="resetBtn">
+                    <i class="fas fa-redo"></i> 重置
+                </button>
+            </div>
+            
+            <div class="stop-btn-container" id="stopBtnContainer">
+                <button class="btn btn-danger" id="stopSimulationBtn">
+                    <i class="fas fa-stop-circle"></i> 停止模擬
+                </button>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <h3>最終餘額</h3>
+                    <div class="value" id="finalBalance">0</div>
+                </div>
+                <div class="summary-card">
+                    <h3>總贏金額</h3>
+                    <div class="value" id="totalWin">0</div>
+                </div>
+                <div class="summary-card">
+                    <h3>A贏手續費</h3>
+                    <div class="value" id="feeFromAWins">0</div>
+                </div>
+                <div class="summary-card">
+                    <h3>總局數</h3>
+                    <div class="value" id="totalRoundsResult">0</div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th>局數 (B)</th>
+                            <th>結果 (C)</th>
+                            <th>保護標記 (D)</th>
+                            <th>投注金額 (E)</th>
+                            <th>勝負 (F)</th>
+                            <th>單局盈虧 (G)</th>
+                            <th>累計資金 (H)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody">
+                        <!-- 資料將通過JavaScript動態填充 -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="export-section">
+                <button class="btn btn-warning" id="exportPNGBtn" style="display: none;">
+                    <i class="fas fa-file-image"></i> 匯出為PNG
+                </button>
+                <button class="btn btn-success" id="exportDataBtn">
+                    <i class="fas fa-file-export"></i> 匯出資料
+                </button>
+            </div>
+        </div>
+
+        <footer>
+            <p>投注模擬系統 v1.1 | 基於VBA投注模擬邏輯移植 | 僅供模擬分析使用</p>
+        </footer>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        // 全域變數
+        let currentMode = 'random'; // 'random' 或 'manual'
+        let bettingRules = {};
+        let simulationResults = [];
+        let isSimulating = false;
+        let stopSimulation = false;
+
+        // DOM元素
+        const randomModeBtn = document.getElementById('randomModeBtn');
+        const manualModeBtn = document.getElementById('manualModeBtn');
+        const totalRoundsInput = document.getElementById('totalRounds');
+        const totalRoundsLabel = document.getElementById('totalRoundsLabel');
+        const initialCapitalInput = document.getElementById('initialCapital');
+        const baseBetInput = document.getElementById('baseBet');
+        const incrementRateInput = document.getElementById('incrementRate');
+        const multiSimulationGroup = document.getElementById('multiSimulationGroup');
+        const multiSimulationCheckbox = document.getElementById('multiSimulation');
+        const simulationTimesInput = document.getElementById('simulationTimes');
+        const manualInputArea = document.getElementById('manualInputArea');
+        const manualSequenceTextarea = document.getElementById('manualSequence');
+        const runSimulationBtn = document.getElementById('runSimulationBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const toggleModeBtn = document.getElementById('toggleModeBtn');
+        const stopBtnContainer = document.getElementById('stopBtnContainer');
+        const stopSimulationBtn = document.getElementById('stopSimulationBtn');
+        const messageBox = document.getElementById('messageBox');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressText = document.getElementById('progressText');
+        const progressFill = document.getElementById('progressFill');
+        const finalBalanceEl = document.getElementById('finalBalance');
+        const totalWinEl = document.getElementById('totalWin');
+        const feeFromAWinsEl = document.getElementById('feeFromAWins');
+        const totalRoundsResultEl = document.getElementById('totalRoundsResult');
+        const resultsBody = document.getElementById('resultsBody');
+        const exportPNGBtn = document.getElementById('exportPNGBtn');
+        const exportDataBtn = document.getElementById('exportDataBtn');
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initBettingRules();
+            setupEventListeners();
+            updateUIForMode();
+            showMessage('系統已就緒，請設定參數並開始模擬。', 'info');
+        });
+
+        // 初始化投注規則
+        function initBettingRules() {
+            // 基礎投注表 - 50關
+            bettingRules.level1 = []; // 級別1投注額
+            bettingRules.level2 = []; // 級別2投注額
+            bettingRules.level3 = []; // 級別3投注額（僅偶數關）
+            bettingRules.retreatPoints = []; // 回退點
+            
+            // 根據起步注碼和每2關增量生成規則
+            const baseBet = parseInt(baseBetInput.value) || 10;
+            const incrementRate = parseInt(incrementRateInput.value) || 5;
+            
+            for (let i = 1; i <= 50; i++) {
+                // 級別1：基礎投注
+                bettingRules.level1[i] = baseBet;
+                
+                // 級別2：基礎投注 + 增量
+                bettingRules.level2[i] = baseBet + incrementRate;
+                
+                // 級別3：僅偶數關，基礎投注 + 2倍增量
+                if (i % 2 === 0) {
+                    bettingRules.level3[i] = baseBet + (incrementRate * 2);
+                }
+                
+                // 設定回退點（範例：每5關回退到第1關）
+                if (i % 5 === 0) {
+                    bettingRules.retreatPoints[i] = 1;
+                }
+            }
+            
+            // 儲存到localStorage
+            saveBettingRulesToStorage();
+        }
+
+        // 儲存投注規則到本地儲存
+        function saveBettingRulesToStorage() {
+            localStorage.setItem('bettingSimulation_rules', JSON.stringify(bettingRules));
+            localStorage.setItem('bettingSimulation_config', JSON.stringify({
+                baseBet: parseInt(baseBetInput.value) || 10,
+                incrementRate: parseInt(incrementRateInput.value) || 5
+            }));
+        }
+
+        // 從本地儲存載入投注規則
+        function loadBettingRulesFromStorage() {
+            const savedRules = localStorage.getItem('bettingSimulation_rules');
+            const savedConfig = localStorage.getItem('bettingSimulation_config');
+            
+            if (savedRules) {
+                bettingRules = JSON.parse(savedRules);
+            }
+            
+            if (savedConfig) {
+                const config = JSON.parse(savedConfig);
+                baseBetInput.value = config.baseBet;
+                incrementRateInput.value = config.incrementRate;
+            }
+        }
+
+        // 設定事件監聽器
+        function setupEventListeners() {
+            // 模式切換
+            randomModeBtn.addEventListener('click', () => switchMode('random'));
+            manualModeBtn.addEventListener('click', () => switchMode('manual'));
+            toggleModeBtn.addEventListener('click', toggleMode);
+            
+            // 多模擬複選框
+            multiSimulationCheckbox.addEventListener('change', function() {
+                simulationTimesInput.style.display = this.checked ? 'inline-block' : 'none';
+                updateStopButtonVisibility();
+            });
+            
+            // 模擬次數輸入框變化
+            simulationTimesInput.addEventListener('input', updateStopButtonVisibility);
+            
+            // 參數變化時更新投注規則
+            baseBetInput.addEventListener('change', initBettingRules);
+            incrementRateInput.addEventListener('change', initBettingRules);
+            
+            // 按鈕事件
+            runSimulationBtn.addEventListener('click', runSimulation);
+            resetBtn.addEventListener('click', resetForm);
+            stopSimulationBtn.addEventListener('click', stopSimulationHandler);
+            exportPNGBtn.addEventListener('click', exportToPNG);
+            exportDataBtn.addEventListener('click', exportData);
+            
+            // 從本地儲存載入資料
+            loadBettingRulesFromStorage();
+            loadFormDataFromStorage();
+        }
+
+        // 切換模式
+        function switchMode(mode) {
+            currentMode = mode;
+            updateUIForMode();
+            
+            // 更新按鈕啟動狀態
+            randomModeBtn.classList.toggle('active', mode === 'random');
+            manualModeBtn.classList.toggle('active', mode === 'manual');
+            
+            // 儲存模式到本地儲存
+            localStorage.setItem('bettingSimulation_mode', mode);
+        }
+
+        // 切換模式（通過切換按鈕）
+        function toggleMode() {
+            const newMode = currentMode === 'random' ? 'manual' : 'random';
+            switchMode(newMode);
+        }
+
+        // 根據當前模式更新UI
+        function updateUIForMode() {
+            if (currentMode === 'random') {
+                totalRoundsLabel.textContent = '局數';
+                totalRoundsInput.style.display = 'block';
+                multiSimulationGroup.style.display = 'flex';
+                manualInputArea.classList.remove('active');
+                toggleModeBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> 切換到手動模式';
+                toggleModeBtn.className = 'btn btn-pink';
+            } else {
+                totalRoundsLabel.textContent = '手動輸入序列';
+                totalRoundsInput.style.display = 'none';
+                multiSimulationGroup.style.display = 'none';
+                manualInputArea.classList.add('active');
+                toggleModeBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> 切換到隨機模式';
+                toggleModeBtn.className = 'btn btn-primary';
+                
+                // 如果手動輸入區域為空，填充範例資料
+                if (!manualSequenceTextarea.value.trim()) {
+                    manualSequenceTextarea.value = "A\nB\nA\nA\nB\nB\nA\nB\nA\nB\nA\nA\nA\nB\nB";
+                }
+            }
+            
+            // 更新停止按鈕可見性
+            updateStopButtonVisibility();
+        }
+
+        // 更新停止按鈕可見性
+        function updateStopButtonVisibility() {
+            if (currentMode === 'random' && 
+                multiSimulationCheckbox.checked && 
+                parseInt(simulationTimesInput.value) > 100) {
+                stopBtnContainer.classList.add('active');
+            } else {
+                stopBtnContainer.classList.remove('active');
+            }
+        }
+
+        // 執行模擬
+        async function runSimulation() {
+            if (isSimulating) return;
+            
+            // 驗證輸入
+            if (!validateInputs()) return;
+            
+            isSimulating = true;
+            stopSimulation = false;
+            runSimulationBtn.disabled = true;
+            runSimulationBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 模擬中...';
+            
+            // 獲取參數
+            const totalRounds = parseInt(totalRoundsInput.value) || 100;
+            const initialCapital = parseFloat(initialCapitalInput.value) || 1000;
+            const simulationTimes = multiSimulationCheckbox.checked ? parseInt(simulationTimesInput.value) || 1 : 1;
+            
+            // 儲存表單資料到本地儲存
+            saveFormDataToStorage();
+            
+            // 初始化投注規則
+            initBettingRules();
+            
+            // 清除之前的結果
+            clearResults();
+            
+            if (simulationTimes > 1) {
+                // 批次模擬
+                await runBatchSimulation(totalRounds, initialCapital, simulationTimes);
+            } else {
+                // 單次模擬
+                const result = currentMode === 'random' 
+                    ? runRandomSimulation(totalRounds, initialCapital)
+                    : runManualSimulation(initialCapital);
+                
+                if (result) {
+                    simulationResults = [result];
+                    displayResults(result);
+                    exportPNGBtn.style.display = 'block';
+                }
+            }
+            
+            isSimulating = false;
+            runSimulationBtn.disabled = false;
+            runSimulationBtn.innerHTML = '<i class="fas fa-play-circle"></i> 執行模擬';
+            
+            // 隱藏停止按鈕
+            stopBtnContainer.classList.remove('active');
+        }
+
+        // 執行隨機模擬
+        function runRandomSimulation(totalRounds, initialCapital) {
+            // 1. 生成B列（局數）和C列（隨機A/B結果）
+            const rounds = [];
+            for (let i = 1; i <= totalRounds; i++) {
+                rounds.push({
+                    round: i,
+                    result: Math.random() >= 0.5 ? 'A' : 'B',
+                    protectMark: 'V', // 預設有保護標記
+                    betAmount: 0,
+                    outcome: '',
+                    profitLoss: 0,
+                    cumulativeBalance: initialCapital
+                });
+            }
+            
+            // 2. 生成F列（勝負）
+            for (let i = 0; i < totalRounds - 1; i++) {
+                if (rounds[i].result === rounds[i + 1].result) {
+                    rounds[i].outcome = 'W'; // 相同 → 贏
+                } else {
+                    rounds[i].outcome = 'L'; // 不同 → 輸
+                }
+            }
+            
+            // 3. 保護規則：連續4個L時，清除下一個V標記
+            if (totalRounds >= 5) {
+                for (let i = 3; i < totalRounds - 1; i++) {
+                    let isFourL = true;
+                    
+                    for (let k = 0; k <= 3; k++) {
+                        if (rounds[i - k].outcome !== 'L') {
+                            isFourL = false;
+                            break;
+                        }
+                    }
+                    
+                    if (isFourL) {
+                        rounds[i + 1].protectMark = ''; // 清除V標記
+                    }
+                }
+            }
+            
+            // 4. D欄沒有V時，對應的F欄清空
+            for (let i = 0; i < totalRounds; i++) {
+                if (rounds[i].protectMark !== 'V') {
+                    rounds[i].outcome = '';
+                }
+            }
+            
+            // 5. 生成E欄：投注金額（三級別投注系統）
+            let currentGuan = 1;
+            let currentLevel = 1;
+            let winStreak = 0;
+            
+            for (let i = 0; i < totalRounds; i++) {
+                const round = rounds[i];
+                
+                // 如果沒有V標記或沒有勝負結果，不清除投注金額
+                if (round.protectMark !== 'V' || (round.outcome !== 'W' && round.outcome !== 'L')) {
+                    round.betAmount = 0;
+                    continue;
+                }
+                
+                // 限制關數在1-50之間
+                if (currentGuan > 50) currentGuan = 50;
+                
+                // 根據當前級別和關數確定投注金額
+                let betAmount = 0;
+                
+                switch (currentLevel) {
+                    case 1:
+                        if (bettingRules.level1[currentGuan]) {
+                            betAmount = bettingRules.level1[currentGuan];
+                        }
+                        break;
+                    case 2:
+                        if (bettingRules.level2[currentGuan]) {
+                            betAmount = bettingRules.level2[currentGuan];
+                        }
+                        break;
+                    case 3:
+                        // 級別3僅在偶數關有效
+                        if (currentGuan % 2 === 0 && bettingRules.level3[currentGuan]) {
+                            betAmount = bettingRules.level3[currentGuan];
+                        }
+                        break;
+                }
+                
+                if (betAmount > 0) {
+                    round.betAmount = betAmount;
+                } else {
+                    round.betAmount = 0;
+                }
+                
+                // 更新連勝與關數
+                if (round.outcome === 'W') {
+                    winStreak++;
+                    
+                    if (currentGuan % 2 === 1) {
+                        // 奇數關
+                        if (winStreak >= 2 && currentLevel === 2) {
+                            // 檢查是否有回退點
+                            if (bettingRules.retreatPoints[currentGuan]) {
+                                currentGuan = bettingRules.retreatPoints[currentGuan];
+                                currentLevel = 1;
+                                winStreak = 0;
+                            }
+                        } else {
+                            if (currentLevel < 2) currentLevel++;
+                        }
+                    } else {
+                        // 偶數關
+                        if (winStreak >= 3 && currentLevel === 3) {
+                            // 檢查是否有回退點
+                            if (bettingRules.retreatPoints[currentGuan]) {
+                                currentGuan = bettingRules.retreatPoints[currentGuan];
+                                currentLevel = 1;
+                                winStreak = 0;
+                            }
+                        } else {
+                            if (currentLevel < 3) currentLevel++;
+                        }
+                    }
+                } else {
+                    // 輸了，重置
+                    winStreak = 0;
+                    currentGuan++;
+                    currentLevel = 1;
+                }
+            }
+            
+            // 6. 生成G欄：單局盈虧
+            let balance = initialCapital;
+            let sumWin = 0;
+            let sumSpecialWin = 0;
+            
+            for (let i = 0; i < totalRounds; i++) {
+                const round = rounds[i];
+                
+                if (round.protectMark !== 'V' || round.betAmount === 0) {
+                    round.profitLoss = 0;
+                    round.cumulativeBalance = balance;
+                    continue;
+                }
+                
+                if (round.outcome === 'W') {
+                    if (round.result === 'A') {
+                        // A贏扣5%
+                        round.profitLoss = round.betAmount * 0.95;
+                        sumSpecialWin += round.betAmount;
+                    } else {
+                        round.profitLoss = round.betAmount;
+                    }
+                    sumWin += round.profitLoss;
+                } else {
+                    round.profitLoss = -round.betAmount;
+                }
+                
+                balance += round.profitLoss;
+                round.cumulativeBalance = balance;
+            }
+            
+            // 7. 計算統計結果
+            const finalBalance = balance;
+            const feeFromAWins = sumSpecialWin * 0.05;
+            
+            return {
+                rounds: rounds,
+                finalBalance: finalBalance,
+                totalWin: sumWin,
+                feeFromAWins: feeFromAWins,
+                totalRounds: totalRounds,
+                initialCapital: initialCapital
+            };
+        }
+
+        // 執行手動模擬
+        function runManualSimulation(initialCapital) {
+            // 解析手動輸入的A/B序列
+            const inputText = manualSequenceTextarea.value.trim();
+            const lines = inputText.split('\n');
+            
+            // 提取有效的A/B序列
+            const validResults = [];
+            for (let line of lines) {
+                const trimmed = line.trim().toUpperCase();
+                if (trimmed === 'A' || trimmed === 'B') {
+                    validResults.push(trimmed);
+                }
+            }
+            
+            if (validResults.length === 0) {
+                showMessage('請輸入至少一個有效的A或B', 'error');
+                return null;
+            }
+            
+            const totalRounds = validResults.length;
+            
+            // 1. 生成B列（局數）和C列（結果）
+            const rounds = [];
+            for (let i = 0; i < totalRounds; i++) {
+                rounds.push({
+                    round: i + 1,
+                    result: validResults[i],
+                    protectMark: 'V', // 預設有保護標記
+                    betAmount: 0,
+                    outcome: '',
+                    profitLoss: 0,
+                    cumulativeBalance: initialCapital
+                });
+            }
+            
+            // 2. 生成F列（勝負）
+            for (let i = 0; i < totalRounds - 1; i++) {
+                if (rounds[i].result === rounds[i + 1].result) {
+                    rounds[i].outcome = 'W'; // 相同 → 贏
+                } else {
+                    rounds[i].outcome = 'L'; // 不同 → 輸
+                }
+            }
+            
+            // 3. 保護規則：連續4個L時，清除下一個V標記
+            if (totalRounds >= 5) {
+                for (let i = 3; i < totalRounds - 1; i++) {
+                    let isFourL = true;
+                    
+                    for (let k = 0; k <= 3; k++) {
+                        if (rounds[i - k].outcome !== 'L') {
+                            isFourL = false;
+                            break;
+                        }
+                    }
+                    
+                    if (isFourL) {
+                        rounds[i + 1].protectMark = ''; // 清除V標記
+                    }
+                }
+            }
+            
+            // 4. D欄沒有V時，對應的F欄清空
+            for (let i = 0; i < totalRounds; i++) {
+                if (rounds[i].protectMark !== 'V') {
+                    rounds[i].outcome = '';
+                }
+            }
+            
+            // 5. 生成E欄：投注金額（三級別投注系統）
+            let currentGuan = 1;
+            let currentLevel = 1;
+            let winStreak = 0;
+            
+            for (let i = 0; i < totalRounds; i++) {
+                const round = rounds[i];
+                
+                // 如果沒有V標記或沒有勝負結果，不清除投注金額
+                if (round.protectMark !== 'V' || (round.outcome !== 'W' && round.outcome !== 'L')) {
+                    round.betAmount = 0;
+                    continue;
+                }
+                
+                // 限制關數在1-50之間
+                if (currentGuan > 50) currentGuan = 50;
+                
+                // 根據當前級別和關數確定投注金額
+                let betAmount = 0;
+                
+                switch (currentLevel) {
+                    case 1:
+                        if (bettingRules.level1[currentGuan]) {
+                            betAmount = bettingRules.level1[currentGuan];
+                        }
+                        break;
+                    case 2:
+                        if (bettingRules.level2[currentGuan]) {
+                            betAmount = bettingRules.level2[currentGuan];
+                        }
+                        break;
+                    case 3:
+                        // 級別3僅在偶數關有效
+                        if (currentGuan % 2 === 0 && bettingRules.level3[currentGuan]) {
+                            betAmount = bettingRules.level3[currentGuan];
+                        }
+                        break;
+                }
+                
+                if (betAmount > 0) {
+                    round.betAmount = betAmount;
+                } else {
+                    round.betAmount = 0;
+                }
+                
+                // 更新連勝與關數
+                if (round.outcome === 'W') {
+                    winStreak++;
+                    
+                    if (currentGuan % 2 === 1) {
+                        // 奇數關
+                        if (winStreak >= 2 && currentLevel === 2) {
+                            // 檢查是否有回退點
+                            if (bettingRules.retreatPoints[currentGuan]) {
+                                currentGuan = bettingRules.retreatPoints[currentGuan];
+                                currentLevel = 1;
+                                winStreak = 0;
+                            }
+                        } else {
+                            if (currentLevel < 2) currentLevel++;
+                        }
+                    } else {
+                        // 偶數關
+                        if (winStreak >= 3 && currentLevel === 3) {
+                            // 檢查是否有回退點
+                            if (bettingRules.retreatPoints[currentGuan]) {
+                                currentGuan = bettingRules.retreatPoints[currentGuan];
+                                currentLevel = 1;
+                                winStreak = 0;
+                            }
+                        } else {
+                            if (currentLevel < 3) currentLevel++;
+                        }
+                    }
+                } else {
+                    // 輸了，重置
+                    winStreak = 0;
+                    currentGuan++;
+                    currentLevel = 1;
+                }
+            }
+            
+            // 6. 生成G欄：單局盈虧
+            let balance = initialCapital;
+            let sumWin = 0;
+            let sumSpecialWin = 0;
+            
+            for (let i = 0; i < totalRounds; i++) {
+                const round = rounds[i];
+                
+                if (round.protectMark !== 'V' || round.betAmount === 0) {
+                    round.profitLoss = 0;
+                    round.cumulativeBalance = balance;
+                    continue;
+                }
+                
+                if (round.outcome === 'W') {
+                    if (round.result === 'A') {
+                        // A贏扣5%
+                        round.profitLoss = round.betAmount * 0.95;
+                        sumSpecialWin += round.betAmount;
+                    } else {
+                        round.profitLoss = round.betAmount;
+                    }
+                    sumWin += round.profitLoss;
+                } else {
+                    round.profitLoss = -round.betAmount;
+                }
+                
+                balance += round.profitLoss;
+                round.cumulativeBalance = balance;
+            }
+            
+            // 7. 計算統計結果
+            const finalBalance = balance;
+            const feeFromAWins = sumSpecialWin * 0.05;
+            
+            return {
+                rounds: rounds,
+                finalBalance: finalBalance,
+                totalWin: sumWin,
+                feeFromAWins: feeFromAWins,
+                totalRounds: totalRounds,
+                initialCapital: initialCapital
+            };
+        }
+
+        // 執行批次模擬
+        async function runBatchSimulation(totalRounds, initialCapital, simulationTimes) {
+            progressContainer.classList.add('active');
+            exportPNGBtn.style.display = 'none';
+            
+            const results = [];
+            const batchSummary = {
+                finalBalances: [],
+                totalWins: [],
+                feeFromAWins: []
+            };
+            
+            for (let i = 0; i < simulationTimes; i++) {
+                // 檢查是否停止模擬
+                if (stopSimulation) {
+                    showMessage('模擬已中止', 'warning');
+                    break;
+                }
+                
+                // 更新進度
+                const progress = ((i + 1) / simulationTimes) * 100;
+                progressText.textContent = `${i + 1}/${simulationTimes}`;
+                progressFill.style.width = `${progress}%`;
+                
+                // 執行單次模擬
+                const result = currentMode === 'random'
+                    ? runRandomSimulation(totalRounds, initialCapital)
+                    : runManualSimulation(initialCapital);
+                
+                if (result) {
+                    results.push(result);
+                    
+                    // 收集統計資料
+                    batchSummary.finalBalances.push(result.finalBalance);
+                    batchSummary.totalWins.push(result.totalWin);
+                    batchSummary.feeFromAWins.push(result.feeFromAWins);
+                }
+                
+                // 短暫延遲以避免阻塞UI
+                if (i < simulationTimes - 1 && !stopSimulation) {
+                    await new Promise(resolve => setTimeout(resolve, 10));
+                }
+            }
+            
+            simulationResults = results;
+            
+            // 顯示批次模擬的統計摘要
+            if (results.length > 0) {
+                displayBatchSummary(batchSummary, results.length);
+                
+                // 顯示最後一次模擬的詳細結果
+                displayResults(results[results.length - 1]);
+            }
+            
+            progressContainer.classList.remove('active');
+            
+            if (!stopSimulation) {
+                showMessage(`已完成 ${results.length} 次模擬`, 'success');
+            }
+        }
+
+        // 顯示批次模擬的統計摘要
+        function displayBatchSummary(batchSummary, simulationTimes) {
+            // 計算統計資訊
+            const avgFinalBalance = batchSummary.finalBalances.reduce((a, b) => a + b, 0) / simulationTimes;
+            const minFinalBalance = Math.min(...batchSummary.finalBalances);
+            const maxFinalBalance = Math.max(...batchSummary.finalBalances);
+            
+            const avgTotalWin = batchSummary.totalWins.reduce((a, b) => a + b, 0) / simulationTimes;
+            const avgFeeFromAWins = batchSummary.feeFromAWins.reduce((a, b) => a + b, 0) / simulationTimes;
+            
+            // 在結果表格前新增統計摘要
+            const summaryHTML = `
+                <div style="background-color: #252542; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <h3 style="color: #4cc9f0; margin-bottom: 10px;">批次模擬統計摘要 (${simulationTimes}次)</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div>
+                            <div style="font-size: 14px; color: #a0a0c0;">平均最終餘額</div>
+                            <div style="font-size: 24px; font-weight: bold; color: ${avgFinalBalance >= 0 ? '#4ade80' : '#f87171'}">${avgFinalBalance.toFixed(2)}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 14px; color: #a0a0c0;">最終餘額範圍</div>
+                            <div style="font-size: 24px; font-weight: bold; color: #4cc9f0">${minFinalBalance.toFixed(2)} - ${maxFinalBalance.toFixed(2)}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 14px; color: #a0a0c0;">平均總贏金額</div>
+                            <div style="font-size: 24px; font-weight: bold; color: #4ade80">${avgTotalWin.toFixed(2)}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 14px; color: #a0a0c0;">平均A贏手續費</div>
+                            <div style="font-size: 24px; font-weight: bold; color: #f59e0b">${avgFeeFromAWins.toFixed(2)}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 插入摘要
+            const resultsSection = document.querySelector('.results-section');
+            const tableContainer = document.querySelector('.table-container');
+            const existingSummary = document.querySelector('.batch-summary');
+            
+            if (existingSummary) {
+                existingSummary.remove();
+            }
+            
+            const summaryDiv = document.createElement('div');
+            summaryDiv.className = 'batch-summary';
+            summaryDiv.innerHTML = summaryHTML;
+            
+            resultsSection.insertBefore(summaryDiv, tableContainer);
+        }
+
+        // 顯示結果
+        function displayResults(result) {
+            // 更新摘要卡片
+            finalBalanceEl.textContent = result.finalBalance.toFixed(2);
+            finalBalanceEl.className = `value ${result.finalBalance >= result.initialCapital ? 'positive' : 'negative'}`;
+            
+            totalWinEl.textContent = result.totalWin.toFixed(2);
+            totalWinEl.className = 'value positive';
+            
+            feeFromAWinsEl.textContent = result.feeFromAWins.toFixed(2);
+            feeFromAWinsEl.className = 'value';
+            
+            totalRoundsResultEl.textContent = result.totalRounds;
+            
+            // 生成表格行
+            let tableHTML = '';
+            
+            for (let i = 0; i < result.rounds.length; i++) {
+                const round = result.rounds[i];
+                
+                tableHTML += `
+                    <tr>
+                        <td>${round.round}</td>
+                        <td class="result-${round.result}">${round.result}</td>
+                        <td>${round.protectMark || ''}</td>
+                        <td>${round.betAmount > 0 ? round.betAmount.toFixed(2) : ''}</td>
+                        <td class="result-${round.outcome}">${round.outcome}</td>
+                        <td class="${round.profitLoss >= 0 ? 'result-W' : 'result-L'}">${round.profitLoss !== 0 ? round.profitLoss.toFixed(2) : ''}</td>
+                        <td>${round.cumulativeBalance.toFixed(2)}</td>
+                    </tr>
+                `;
+            }
+            
+            resultsBody.innerHTML = tableHTML;
+            
+            showMessage('模擬完成！', 'success');
+        }
+
+        // 驗證輸入
+        function validateInputs() {
+            // 清除之前的錯誤訊息
+            messageBox.className = 'message';
+            messageBox.style.display = 'none';
+            
+            if (currentMode === 'random') {
+                // 驗證隨機模式輸入
+                if (!totalRoundsInput.value.trim()) {
+                    showMessage('請輸入局數', 'error');
+                    totalRoundsInput.focus();
+                    return false;
+                }
+                
+                if (!isNumeric(totalRoundsInput.value)) {
+                    showMessage('局數必須是數字', 'error');
+                    totalRoundsInput.focus();
+                    return false;
+                }
+                
+                const totalRounds = parseInt(totalRoundsInput.value);
+                if (totalRounds <= 0) {
+                    showMessage('局數必須大於0', 'error');
+                    totalRoundsInput.focus();
+                    return false;
+                }
+            } else {
+                // 驗證手動模式輸入
+                const inputText = manualSequenceTextarea.value.trim();
+                if (!inputText) {
+                    showMessage('請輸入A/B序列', 'error');
+                    manualSequenceTextarea.focus();
+                    return false;
+                }
+                
+                const lines = inputText.split('\n');
+                let validCount = 0;
+                
+                for (let line of lines) {
+                    const trimmed = line.trim().toUpperCase();
+                    if (trimmed === 'A' || trimmed === 'B') {
+                        validCount++;
+                    }
+                }
+                
+                if (validCount === 0) {
+                    showMessage('請輸入至少一個有效的A或B', 'error');
+                    manualSequenceTextarea.focus();
+                    return false;
+                }
+            }
+            
+            // 驗證其他必填項
+            if (!initialCapitalInput.value.trim()) {
+                showMessage('請輸入初始金額', 'error');
+                initialCapitalInput.focus();
+                return false;
+            }
+            
+            if (!isNumeric(initialCapitalInput.value)) {
+                showMessage('初始金額必須是數字', 'error');
+                initialCapitalInput.focus();
+                return false;
+            }
+            
+            if (!baseBetInput.value.trim()) {
+                showMessage('請輸入起步注碼', 'error');
+                baseBetInput.focus();
+                return false;
+            }
+            
+            if (!isNumeric(baseBetInput.value)) {
+                showMessage('起步注碼必須是數字', 'error');
+                baseBetInput.focus();
+                return false;
+            }
+            
+            if (!incrementRateInput.value.trim()) {
+                showMessage('請輸入每2關+？', 'error');
+                incrementRateInput.focus();
+                return false;
+            }
+            
+            if (!isNumeric(incrementRateInput.value)) {
+                showMessage('每2關+？必須是數字', 'error');
+                incrementRateInput.focus();
+                return false;
+            }
+            
+            // 驗證多模擬次數
+            if (multiSimulationCheckbox.checked) {
+                if (!simulationTimesInput.value.trim()) {
+                    showMessage('請輸入執行次數', 'error');
+                    simulationTimesInput.focus();
+                    return false;
+                }
+                
+                if (!isNumeric(simulationTimesInput.value)) {
+                    showMessage('執行次數必須是數字', 'error');
+                    simulationTimesInput.focus();
+                    return false;
+                }
+                
+                const simulationTimes = parseInt(simulationTimesInput.value);
+                if (simulationTimes <= 0) {
+                    showMessage('執行次數必須大於0', 'error');
+                    simulationTimesInput.focus();
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        // 檢查是否為數字
+        function isNumeric(value) {
+            return !isNaN(parseFloat(value)) && isFinite(value);
+        }
+
+        // 顯示訊息
+        function showMessage(message, type) {
+            messageBox.textContent = message;
+            messageBox.className = `message ${type}`;
+            messageBox.style.display = 'flex';
+            
+            // 自動隱藏資訊訊息
+            if (type === 'info') {
+                setTimeout(() => {
+                    if (messageBox.className.includes('info')) {
+                        messageBox.style.display = 'none';
+                    }
+                }, 5000);
+            }
+        }
+
+        // 清除結果
+        function clearResults() {
+            resultsBody.innerHTML = '';
+            finalBalanceEl.textContent = '0';
+            totalWinEl.textContent = '0';
+            feeFromAWinsEl.textContent = '0';
+            totalRoundsResultEl.textContent = '0';
+            
+            // 清除批次模擬摘要
+            const existingSummary = document.querySelector('.batch-summary');
+            if (existingSummary) {
+                existingSummary.remove();
+            }
+        }
+
+        // 重置表單
+        function resetForm() {
+            totalRoundsInput.value = '100';
+            initialCapitalInput.value = '1000';
+            baseBetInput.value = '10';
+            incrementRateInput.value = '5';
+            multiSimulationCheckbox.checked = false;
+            simulationTimesInput.style.display = 'none';
+            simulationTimesInput.value = '1';
+            manualSequenceTextarea.value = "A\nB\nA\nA\nB\nB\nA\nB\nA\nB\nA\nA\nA\nB\nB";
+            
+            clearResults();
+            messageBox.style.display = 'none';
+            exportPNGBtn.style.display = 'none';
+            stopBtnContainer.classList.remove('active');
+            
+            // 重新初始化投注規則
+            initBettingRules();
+            
+            showMessage('表單已重置', 'info');
+        }
+
+        // 停止模擬處理函數
+        function stopSimulationHandler() {
+            if (isSimulating) {
+                stopSimulation = true;
+                showMessage('正在停止模擬...', 'warning');
+            }
+        }
+
+        // 匯出為PNG
+        async function exportToPNG() {
+            if (simulationResults.length === 0) {
+                showMessage('沒有可匯出的資料', 'error');
+                return;
+            }
+            
+            try {
+                showMessage('正在生成PNG圖片...', 'info');
+                
+                // 獲取要匯出的區域
+                const exportElement = document.querySelector('.results-section');
+                
+                // 使用html2canvas將元素轉換為canvas
+                const canvas = await html2canvas(exportElement, {
+                    scale: 2, // 提高解析度
+                    backgroundColor: '#191928',
+                    useCORS: true,
+                    logging: false
+                });
+                
+                // 將canvas轉換為圖片URL
+                const imageURL = canvas.toDataURL('image/png');
+                
+                // 建立下載連結
+                const link = document.createElement('a');
+                link.href = imageURL;
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+                link.download = `投注模擬_${timestamp}.png`;
+                
+                // 觸發下載
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showMessage('PNG圖片匯出成功！', 'success');
+            } catch (error) {
+                console.error('PNG匯出錯誤:', error);
+                showMessage('PNG匯出失敗: ' + error.message, 'error');
+            }
+        }
+
+        // 匯出資料
+        function exportData() {
+            if (simulationResults.length === 0) {
+                showMessage('沒有可匯出的資料', 'error');
+                return;
+            }
+            
+            const result = simulationResults[0];
+            const data = {
+                simulationConfig: {
+                    mode: currentMode,
+                    totalRounds: result.totalRounds,
+                    initialCapital: result.initialCapital,
+                    baseBet: parseInt(baseBetInput.value) || 10,
+                    incrementRate: parseInt(incrementRateInput.value) || 5,
+                    simulationTimes: multiSimulationCheckbox.checked ? parseInt(simulationTimesInput.value) || 1 : 1
+                },
+                simulationResult: {
+                    finalBalance: result.finalBalance,
+                    totalWin: result.totalWin,
+                    feeFromAWins: result.feeFromAWins,
+                    rounds: result.rounds
+                },
+                exportTime: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `投注模擬資料_${new Date().toISOString().slice(0, 10)}.json`;
+            link.click();
+            
+            showMessage('資料匯出成功！', 'success');
+        }
+
+        // 儲存表單資料到本地儲存
+        function saveFormDataToStorage() {
+            const formData = {
+                totalRounds: totalRoundsInput.value,
+                initialCapital: initialCapitalInput.value,
+                baseBet: baseBetInput.value,
+                incrementRate: incrementRateInput.value,
+                multiSimulation: multiSimulationCheckbox.checked,
+                simulationTimes: simulationTimesInput.value,
+                manualSequence: manualSequenceTextarea.value,
+                mode: currentMode
+            };
+            
+            localStorage.setItem('bettingSimulation_formData', JSON.stringify(formData));
+        }
+
+        // 從本地儲存載入表單資料
+        function loadFormDataFromStorage() {
+            const savedData = localStorage.getItem('bettingSimulation_formData');
+            const savedMode = localStorage.getItem('bettingSimulation_mode');
+            
+            if (savedData) {
+                const formData = JSON.parse(savedData);
+                
+                totalRoundsInput.value = formData.totalRounds || '100';
+                initialCapitalInput.value = formData.initialCapital || '1000';
+                baseBetInput.value = formData.baseBet || '10';
+                incrementRateInput.value = formData.incrementRate || '5';
+                multiSimulationCheckbox.checked = formData.multiSimulation || false;
+                simulationTimesInput.value = formData.simulationTimes || '1';
+                simulationTimesInput.style.display = formData.multiSimulation ? 'inline-block' : 'none';
+                manualSequenceTextarea.value = formData.manualSequence || "A\nB\nA\nA\nB\nB\nA\nB\nA\nB\nA\nA\nA\nB\nB";
+                
+                if (savedMode) {
+                    switchMode(savedMode);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
