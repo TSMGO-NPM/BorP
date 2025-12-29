@@ -572,6 +572,39 @@
     </style>
 </head>
 <body>
+    <!-- 添加登入頁面 -->
+    <div id="loginPage" style="display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); z-index: 9999;">
+        <div style="background-color: rgba(25, 25, 40, 0.95); padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7); width: 350px; border: 1px solid #2a2a4a;">
+            <h2 style="color: #4cc9f0; text-align: center; margin-bottom: 30px; font-size: 24px;">
+                <i class="fas fa-lock"></i> BorP模擬系統
+            </h2>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; color: #a0a0c0; margin-bottom: 8px; font-weight: 500;">帳號</label>
+                <input type="text" id="loginUsername" style="width: 100%; padding: 12px 15px; background-color: #252542; border: 1px solid #3a3a5a; border-radius: 6px; color: #e6e6e6; font-size: 15px;" placeholder="輸入帳號" value="admin">
+            </div>
+            
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; color: #a0a0c0; margin-bottom: 8px; font-weight: 500;">密碼</label>
+                <input type="password" id="loginPassword" style="width: 100%; padding: 12px 15px; background-color: #252542; border: 1px solid #3a3a5a; border-radius: 6px; color: #e6e6e6; font-size: 15px;" placeholder="輸入密碼" value="admin2025">
+            </div>
+            
+            <div id="loginMessage" style="color: #f87171; margin-bottom: 20px; text-align: center; display: none;">
+                <i class="fas fa-exclamation-circle"></i> 帳號或密碼錯誤
+            </div>
+            
+            <button id="loginBtn" style="width: 100%; padding: 12px; background: linear-gradient(90deg, #4361ee, #3a0ca3); color: white; border: none; border-radius: 6px; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <i class="fas fa-sign-in-alt"></i> 登入
+            </button>
+            
+            <p style="text-align: center; color: #8888aa; font-size: 12px; margin-top: 20px;">
+                預設帳號: admin<br>
+                預設密碼: admin2025
+            </p>
+        </div>
+    </div>
+
+    <div class="container" style="display: none;">
     <div class="container">
         <header>
             <h1><i class="fas fa-chart-line"></i> BorP模擬系統 V0.1</h1>
@@ -748,12 +781,100 @@
         const exportDataBtn = document.getElementById('exportDataBtn');
 
         // 初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            initBettingRules();
-            setupEventListeners();
-            updateUIForMode();
-            showMessage('系統已就緒，請設定參數並開始模擬。', 'info');
+document.addEventListener('DOMContentLoaded', function() {
+    // 登入相關元素
+    const loginPage = document.getElementById('loginPage');
+    const loginUsername = document.getElementById('loginUsername');
+    const loginPassword = document.getElementById('loginPassword');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginMessage = document.getElementById('loginMessage');
+    const mainContainer = document.querySelector('.container');
+    
+    // 預設帳密
+    const DEFAULT_USERNAME = 'admin';
+    const DEFAULT_PASSWORD = 'admin2025';
+    
+    // 檢查是否已經登入
+    const isLoggedIn = localStorage.getItem('borp_logged_in') === 'true';
+    
+    if (isLoggedIn) {
+        // 如果已經登入，顯示主頁面
+        loginPage.style.display = 'none';
+        mainContainer.style.display = 'block';
+        initBettingRules();
+        setupEventListeners();
+        updateUIForMode();
+        showMessage('系統已就緒，請設定參數並開始模擬。', 'info');
+    } else {
+        // 顯示登入頁面
+        loginPage.style.display = 'flex';
+        mainContainer.style.display = 'none';
+        
+        // 登入按鈕事件
+        loginBtn.addEventListener('click', function() {
+            const username = loginUsername.value.trim();
+            const password = loginPassword.value.trim();
+            
+            if (username === DEFAULT_USERNAME && password === DEFAULT_PASSWORD) {
+                // 登入成功
+                localStorage.setItem('borp_logged_in', 'true');
+                loginPage.style.display = 'none';
+                mainContainer.style.display = 'block';
+                initBettingRules();
+                setupEventListeners();
+                updateUIForMode();
+                showMessage('登入成功！系統已就緒，請設定參數並開始模擬。', 'success');
+            } else {
+                // 登入失敗
+                loginMessage.style.display = 'block';
+                loginPassword.value = '';
+                loginPassword.focus();
+            }
         });
+        
+        // 按Enter鍵登入
+        loginUsername.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loginPassword.focus();
+            }
+        });
+        
+        loginPassword.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loginBtn.click();
+            }
+        });
+    }
+    
+    // 添加登出功能（可選，可以添加到某個按鈕上）
+    // 例如在重置按鈕上添加雙擊登出功能
+    setTimeout(() => {
+        const resetBtn = document.getElementById('resetBtn');
+        if (resetBtn) {
+            let resetClickCount = 0;
+            let resetClickTimer;
+            
+            resetBtn.addEventListener('click', function() {
+                resetClickCount++;
+                
+                if (resetClickCount === 1) {
+                    resetClickTimer = setTimeout(() => {
+                        resetClickCount = 0;
+                    }, 1000);
+                } else if (resetClickCount === 2) {
+                    clearTimeout(resetClickTimer);
+                    resetClickCount = 0;
+                    
+                    // 雙擊重置按鈕登出
+                    if (confirm('是否要登出系統？')) {
+                        localStorage.removeItem('borp_logged_in');
+                        location.reload();
+                    }
+                }
+            });
+        }
+    }, 1000);
+});
 
         // 初始化投注規則
         function initBettingRules() {
