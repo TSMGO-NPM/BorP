@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>投注模擬系統</title>
+    <title>BorP模擬系統</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -511,14 +511,14 @@
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-chart-line"></i> 投注模擬系統</h1>
-            <p class="subtitle">基於VBA投注模擬系統的網頁版本 - 實現隨機/手動模擬、資金管理和結果分析</p>
+            <h1><i class="fas fa-chart-line"></i> BorP模擬系統</h1>
+            <p class="subtitle">模擬遊戲</p>
         </header>
 
         <div class="input-section">
             <div class="mode-selector">
-                <button class="mode-btn active" id="randomModeBtn">隨機模擬模式</button>
-                <button class="mode-btn" id="manualModeBtn">手動輸入模式</button>
+                <button class="mode-btn active" id="randomModeBtn">隨機模式</button>
+                <button class="mode-btn" id="manualModeBtn">手動模式</button>
             </div>
 
             <div class="input-grid">
@@ -596,7 +596,7 @@
                     <div class="value" id="finalBalance">0</div>
                 </div>
                 <div class="summary-card">
-                    <h3>總贏金額</h3>
+                    <h3>ROLLING</h3>
                     <div class="value" id="totalWin">0</div>
                 </div>
                 <div class="summary-card">
@@ -613,13 +613,13 @@
                 <table id="resultsTable">
                     <thead>
                         <tr>
-                            <th>局數 (B)</th>
-                            <th>結果 (C)</th>
-                            <th>保護標記 (D)</th>
-                            <th>投注金額 (E)</th>
-                            <th>勝負 (F)</th>
-                            <th>單局盈虧 (G)</th>
-                            <th>累計資金 (H)</th>
+                            <th>局數</th>
+                            <th>結果</th>
+                            <th>V參考下一局結果</th>
+                            <th>投注金額</th>
+                            <th>勝負</th>
+                            <th>單局盈虧</th>
+                            <th>資金情況</th>
                         </tr>
                     </thead>
                     <tbody id="resultsBody">
@@ -639,7 +639,7 @@
         </div>
 
         <footer>
-            <p>投注模擬系統 v1.1 | 基於VBA投注模擬邏輯移植 | 僅供模擬分析使用</p>
+            <p>Copyright © 2025 MENG</p>
         </footer>
     </div>
 
@@ -810,7 +810,7 @@
                 toggleModeBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> 切換到手動模式';
                 toggleModeBtn.className = 'btn btn-pink';
             } else {
-                totalRoundsLabel.textContent = '手動輸入序列';
+                totalRoundsLabel.textContent = '手動輸入結果';
                 totalRoundsInput.style.display = 'none';
                 multiSimulationGroup.style.display = 'none';
                 manualInputArea.classList.add('active');
@@ -1347,7 +1347,7 @@
                             <div style="font-size: 24px; font-weight: bold; color: #4cc9f0">${minFinalBalance.toFixed(2)} - ${maxFinalBalance.toFixed(2)}</div>
                         </div>
                         <div>
-                            <div style="font-size: 14px; color: #a0a0c0;">平均總贏金額</div>
+                            <div style="font-size: 14px; color: #a0a0c0;">平均ROLLING</div>
                             <div style="font-size: 24px; font-weight: bold; color: #4ade80">${avgTotalWin.toFixed(2)}</div>
                         </div>
                         <div>
