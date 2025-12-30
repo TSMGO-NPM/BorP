@@ -221,6 +221,7 @@
             display: flex;
             gap: 15px;
             align-items: center;
+            margin-left: 20px;
         }
 
         .btn {
@@ -239,15 +240,15 @@
         }
 
         .btn-primary {
-    background: linear-gradient(90deg, #4361ee, #3a0ca3);
-    color: white;
-}
+            background: linear-gradient(90deg, #4361ee, #3a0ca3);
+            color: white;
+        }
 
-.btn-primary:hover {
-    background: linear-gradient(90deg, #3a56d4, #2f0b8a);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
-}
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #3a56d4, #2f0b8a);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        }
 
         .btn-secondary {
             background-color: #3a3a5a;
@@ -672,7 +673,17 @@
             <div class="button-left-group">
                 <button class="btn btn-primary" id="runSimulationBtn">
                     <i class="fas fa-play-circle"></i> 執行模擬
-                </button>                
+                </button>
+                
+                <div class="manual-button-group">
+                    <button class="btn btn-pink" id="toggleModeBtn">
+                        <i class="fas fa-exchange-alt"></i> 切換到手動模式
+                    </button>
+                    <button class="btn btn-secondary" id="resetBtn">
+                        <i class="fas fa-redo"></i> 重置
+                    </button>
+                </div>
+                
                 <div class="stop-btn-container" id="stopBtnContainer">
                     <button class="btn btn-danger" id="stopSimulationBtn">
                         <i class="fas fa-stop-circle"></i> 停止模擬
@@ -681,9 +692,6 @@
             </div>
             
             <div class="button-right-group">
-                <button class="btn btn-secondary" id="resetBtn">
-                        <i class="fas fa-redo"></i> 重置
-                </button>
                 <!-- 新增：一鍵COPY按鈕 -->
                 <button class="btn btn-info" id="copyToManualBtn">
                     <i class="fas fa-copy"></i> 一鍵COPY
@@ -1054,16 +1062,20 @@
         }
 
         // 切換模式
-function switchMode(mode) {
-    currentMode = mode;
-    updateUIForMode();
-    
-    // 儲存模式到本地儲存
-    localStorage.setItem('bettingSimulation_mode', mode);
-    
-    // 儲存當前表單資料
-    saveFormDataToStorage();
-}
+        function switchMode(mode) {
+            currentMode = mode;
+            updateUIForMode();
+            
+            // 更新按鈕啟動狀態
+            randomModeBtn.classList.toggle('active', mode === 'random');
+            manualModeBtn.classList.toggle('active', mode === 'manual');
+            
+            // 儲存模式到本地儲存
+            localStorage.setItem('bettingSimulation_mode', mode);
+            
+            // 儲存當前表單資料
+            saveFormDataToStorage();
+        }
 
         // 切換模式（通過切換按鈕）
         function toggleMode() {
@@ -1072,30 +1084,29 @@ function switchMode(mode) {
         }
 
         // 根據當前模式更新UI
-function updateUIForMode() {
-    if (currentMode === 'random') {
-        totalRoundsLabel.textContent = '局數';
-        totalRoundsInput.style.display = 'block';
-        multiSimulationGroup.style.display = 'flex';
-        manualInputArea.classList.remove('active');
-        
-        // 更新模式選擇按鈕的狀態
-        randomModeBtn.classList.add('active');
-        manualModeBtn.classList.remove('active');
-    } else {
-        totalRoundsLabel.textContent = '手動輸入結果';
-        totalRoundsInput.style.display = 'none';
-        multiSimulationGroup.style.display = 'none';
-        manualInputArea.classList.add('active');
-        
-        // 更新模式選擇按鈕的狀態
-        randomModeBtn.classList.remove('active');
-        manualModeBtn.classList.add('active');
-    }
-    
-    // 更新停止按鈕可見性
-    updateStopButtonVisibility();
-}
+        function updateUIForMode() {
+            if (currentMode === 'random') {
+                totalRoundsLabel.textContent = '局數';
+                totalRoundsInput.style.display = 'block';
+                multiSimulationGroup.style.display = 'flex';
+                manualInputArea.classList.remove('active');
+                toggleModeBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> 切換到手動模式';
+                toggleModeBtn.className = 'btn btn-pink';
+            } else {
+                totalRoundsLabel.textContent = '手動輸入結果';
+                totalRoundsInput.style.display = 'none';
+                multiSimulationGroup.style.display = 'none';
+                manualInputArea.classList.add('active');
+                toggleModeBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> 切換到隨機模式';
+                toggleModeBtn.className = 'btn btn-primary';
+                
+                // 修改這裡：移除預設範例資料，保持空白
+                // 讓用戶自己輸入
+            }
+            
+            // 更新停止按鈕可見性
+            updateStopButtonVisibility();
+        }
 
         // 更新停止按鈕可見性
         function updateStopButtonVisibility() {
@@ -2032,6 +2043,7 @@ function updateUIForMode() {
                     switchMode(savedMode);
                 }
             } else {
+                // 首次使用時，不預設勾選N次模擬
                 multiSimulationCheckbox.checked = false;
                 simulationTimesInput.style.display = 'none';
                 simulationTimesInput.value = '1';
