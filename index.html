@@ -304,6 +304,17 @@
             box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4);
         }
 
+        .btn-info {
+            background: linear-gradient(90deg, #06b6d4, #0891b2);
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: linear-gradient(90deg, #059bb4, #067a9a);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(6, 182, 212, 0.4);
+        }
+
         .results-section {
             padding: 20px 30px;
         }
@@ -681,6 +692,10 @@
             </div>
             
             <div class="button-right-group">
+                <!-- 新增：一鍵COPY按鈕 -->
+                <button class="btn btn-info" id="copyToManualBtn">
+                    <i class="fas fa-copy"></i> 一鍵COPY
+                </button>
                 <button class="btn btn-warning" id="exportPNGBtn" style="display: none;">
                     <i class="fas fa-file-image"></i> 匯出為PNG
                 </button>
@@ -748,6 +763,7 @@
         let simulationResults = [];
         let isSimulating = false;
         let stopSimulation = false;
+        let lastRandomResults = []; // 儲存上一次隨機模擬的結果
 
         // DOM元素
         const randomModeBtn = document.getElementById('randomModeBtn');
@@ -778,6 +794,7 @@
         const resultsBody = document.getElementById('resultsBody');
         const exportPNGBtn = document.getElementById('exportPNGBtn');
         const exportDataBtn = document.getElementById('exportDataBtn');
+        const copyToManualBtn = document.getElementById('copyToManualBtn'); // 新增：一鍵COPY按鈕
 
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
@@ -968,56 +985,97 @@
         }
 
         // 設定事件監聽器
-function setupEventListeners() {
-    // 模式切換
-    randomModeBtn.addEventListener('click', () => switchMode('random'));
-    manualModeBtn.addEventListener('click', () => switchMode('manual'));
-    toggleModeBtn.addEventListener('click', toggleMode);
-    
-    // 多模擬複選框 - 修改這裡
-    multiSimulationCheckbox.addEventListener('change', function() {
-        simulationTimesInput.style.display = this.checked ? 'inline-block' : 'none';
-        // 勾選時確保數值為1
-        if (this.checked && (!simulationTimesInput.value || parseInt(simulationTimesInput.value) < 1)) {
-            simulationTimesInput.value = '1';
+        function setupEventListeners() {
+            // 模式切換
+            randomModeBtn.addEventListener('click', () => switchMode('random'));
+            manualModeBtn.addEventListener('click', () => switchMode('manual'));
+            toggleModeBtn.addEventListener('click', toggleMode);
+            
+            // 多模擬複選框 - 修改這裡
+            multiSimulationCheckbox.addEventListener('change', function() {
+                simulationTimesInput.style.display = this.checked ? 'inline-block' : 'none';
+                // 勾選時確保數值為1
+                if (this.checked && (!simulationTimesInput.value || parseInt(simulationTimesInput.value) < 1)) {
+                    simulationTimesInput.value = '1';
+                }
+                updateStopButtonVisibility();
+            });
+            
+            // 模擬次數輸入框變化
+            simulationTimesInput.addEventListener('input', updateStopButtonVisibility);
+            
+            // 參數變化時更新投注規則
+            baseBetInput.addEventListener('change', initBettingRules);
+            incrementRateInput.addEventListener('change', initBettingRules);
+            
+            // 按鈕事件
+            runSimulationBtn.addEventListener('click', runSimulation);
+            resetBtn.addEventListener('click', resetForm);
+            stopSimulationBtn.addEventListener('click', stopSimulationHandler);
+            exportPNGBtn.addEventListener('click', exportToPNG);
+            exportDataBtn.addEventListener('click', exportData);
+            // 新增：一鍵COPY按鈕事件
+            copyToManualBtn.addEventListener('click', copyToManualHandler);
+            
+            // 從本地儲存載入資料
+            loadBettingRulesFromStorage();
+            loadFormDataFromStorage();
         }
-        updateStopButtonVisibility();
-    });
-    
-    // 模擬次數輸入框變化
-    simulationTimesInput.addEventListener('input', updateStopButtonVisibility);
-    
-    // 參數變化時更新投注規則
-    baseBetInput.addEventListener('change', initBettingRules);
-    incrementRateInput.addEventListener('change', initBettingRules);
-    
-    // 按鈕事件
-    runSimulationBtn.addEventListener('click', runSimulation);
-    resetBtn.addEventListener('click', resetForm);
-    stopSimulationBtn.addEventListener('click', stopSimulationHandler);
-    exportPNGBtn.addEventListener('click', exportToPNG);
-    exportDataBtn.addEventListener('click', exportData);
-    
-    // 從本地儲存載入資料
-    loadBettingRulesFromStorage();
-    loadFormDataFromStorage();
-}
+
+        // 一鍵COPY處理函數
+        function copyToManualHandler() {
+            if (simulationResults.length === 0 || !simulationResults[0].rounds || simulationResults[0].rounds.length === 0) {
+                showMessage('請先執行隨機模擬，才能複製結果', 'warning');
+                return;
+            }
+            
+            const result = simulationResults[0];
+            
+            // 提取所有A/B結果
+            const abSequence = result.rounds.map(round => round.result).join('\n');
+            
+            // 複製到剪貼簿
+            navigator.clipboard.writeText(abSequence).then(() => {
+                // 切換到手動模式
+                switchMode('manual');
+                
+                // 將結果貼到文字框中
+                manualSequenceTextarea.value = abSequence;
+                
+                showMessage('A/B序列已複製並切換到手動模式！', 'success');
+            }).catch(err => {
+                console.error('複製失敗:', err);
+                // 如果剪貼簿API失敗，使用舊方法
+                manualSequenceTextarea.focus();
+                manualSequenceTextarea.select();
+                try {
+                    document.execCommand('copy');
+                    // 切換到手動模式
+                    switchMode('manual');
+                    // 將結果貼到文字框中
+                    manualSequenceTextarea.value = abSequence;
+                    showMessage('A/B序列已複製並切換到手動模式！', 'success');
+                } catch (e) {
+                    showMessage('複製失敗，請手動複製結果', 'error');
+                }
+            });
+        }
 
         // 切換模式
-function switchMode(mode) {
-    currentMode = mode;
-    updateUIForMode();
-    
-    // 更新按鈕啟動狀態
-    randomModeBtn.classList.toggle('active', mode === 'random');
-    manualModeBtn.classList.toggle('active', mode === 'manual');
-    
-    // 儲存模式到本地儲存
-    localStorage.setItem('bettingSimulation_mode', mode);
-    
-    // 儲存當前表單資料
-    saveFormDataToStorage();
-}
+        function switchMode(mode) {
+            currentMode = mode;
+            updateUIForMode();
+            
+            // 更新按鈕啟動狀態
+            randomModeBtn.classList.toggle('active', mode === 'random');
+            manualModeBtn.classList.toggle('active', mode === 'manual');
+            
+            // 儲存模式到本地儲存
+            localStorage.setItem('bettingSimulation_mode', mode);
+            
+            // 儲存當前表單資料
+            saveFormDataToStorage();
+        }
 
         // 切換模式（通過切換按鈕）
         function toggleMode() {
@@ -1026,29 +1084,29 @@ function switchMode(mode) {
         }
 
         // 根據當前模式更新UI
-function updateUIForMode() {
-    if (currentMode === 'random') {
-        totalRoundsLabel.textContent = '局數';
-        totalRoundsInput.style.display = 'block';
-        multiSimulationGroup.style.display = 'flex';
-        manualInputArea.classList.remove('active');
-        toggleModeBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> 切換到手動模式';
-        toggleModeBtn.className = 'btn btn-pink';
-    } else {
-        totalRoundsLabel.textContent = '手動輸入結果';
-        totalRoundsInput.style.display = 'none';
-        multiSimulationGroup.style.display = 'none';
-        manualInputArea.classList.add('active');
-        toggleModeBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> 切換到隨機模式';
-        toggleModeBtn.className = 'btn btn-primary';
-        
-        // 修改這裡：移除預設範例資料，保持空白
-        // 讓用戶自己輸入
-    }
-    
-    // 更新停止按鈕可見性
-    updateStopButtonVisibility();
-}
+        function updateUIForMode() {
+            if (currentMode === 'random') {
+                totalRoundsLabel.textContent = '局數';
+                totalRoundsInput.style.display = 'block';
+                multiSimulationGroup.style.display = 'flex';
+                manualInputArea.classList.remove('active');
+                toggleModeBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> 切換到手動模式';
+                toggleModeBtn.className = 'btn btn-pink';
+            } else {
+                totalRoundsLabel.textContent = '手動輸入結果';
+                totalRoundsInput.style.display = 'none';
+                multiSimulationGroup.style.display = 'none';
+                manualInputArea.classList.add('active');
+                toggleModeBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> 切換到隨機模式';
+                toggleModeBtn.className = 'btn btn-primary';
+                
+                // 修改這裡：移除預設範例資料，保持空白
+                // 讓用戶自己輸入
+            }
+            
+            // 更新停止按鈕可見性
+            updateStopButtonVisibility();
+        }
 
         // 更新停止按鈕可見性
         function updateStopButtonVisibility() {
@@ -1098,6 +1156,10 @@ function updateUIForMode() {
                 
                 if (result) {
                     simulationResults = [result];
+                    // 如果是隨機模擬，儲存結果以便複製
+                    if (currentMode === 'random') {
+                        lastRandomResults = result.rounds.map(round => round.result);
+                    }
                     displayResults(result);
                     exportPNGBtn.style.display = 'block';
                 }
@@ -1302,6 +1364,9 @@ function updateUIForMode() {
             // 7. 計算統計結果
             const finalBalance = balance;
             const feeFromAWins = sumSpecialWin * 0.05;
+            
+            // 儲存A/B結果以便複製
+            lastRandomResults = rounds.map(round => round.result);
             
             return {
                 rounds: rounds,
@@ -1643,42 +1708,42 @@ function updateUIForMode() {
         }
 
         // 顯示結果
-function displayResults(result) {
-    // 更新摘要卡片
-    finalBalanceEl.textContent = result.finalBalance.toFixed(2);
-    finalBalanceEl.className = `value ${result.finalBalance >= result.initialCapital ? 'positive' : 'negative'}`;
-    
-    totalWinEl.textContent = result.totalWin.toFixed(2);
-    totalWinEl.className = 'value positive';
-    
-    feeFromAWinsEl.textContent = result.feeFromAWins.toFixed(2);
-    feeFromAWinsEl.className = 'value';
-    
-    totalRoundsResultEl.textContent = result.totalRounds;
-    
-    // 生成表格行
-    let tableHTML = '';
-    
-    for (let i = 0; i < result.rounds.length; i++) {
-        const round = result.rounds[i];
-        
-        tableHTML += `
-            <tr>
-                <td>${round.round}</td>
-                <td class="result-${round.result}">${round.result}</td>
-                <td>${round.protectMark || ''}</td>
-                <td>${round.betAmount > 0 ? round.betAmount.toFixed(2) : ''}</td>
-                <td class="result-${round.outcome}">${round.outcome}</td>
-                <td class="${round.profitLoss >= 0 ? 'result-W' : 'result-L'}">${round.profitLoss !== 0 ? round.profitLoss.toFixed(2) : ''}</td>
-                <td>${round.cumulativeBalance.toFixed(2)}</td>
-            </tr>
-        `;
-    }
-    
-    resultsBody.innerHTML = tableHTML;
-    
-    showMessage('模擬完成！', 'success');
-}
+        function displayResults(result) {
+            // 更新摘要卡片
+            finalBalanceEl.textContent = result.finalBalance.toFixed(2);
+            finalBalanceEl.className = `value ${result.finalBalance >= result.initialCapital ? 'positive' : 'negative'}`;
+            
+            totalWinEl.textContent = result.totalWin.toFixed(2);
+            totalWinEl.className = 'value positive';
+            
+            feeFromAWinsEl.textContent = result.feeFromAWins.toFixed(2);
+            feeFromAWinsEl.className = 'value';
+            
+            totalRoundsResultEl.textContent = result.totalRounds;
+            
+            // 生成表格行
+            let tableHTML = '';
+            
+            for (let i = 0; i < result.rounds.length; i++) {
+                const round = result.rounds[i];
+                
+                tableHTML += `
+                    <tr>
+                        <td>${round.round}</td>
+                        <td class="result-${round.result}">${round.result}</td>
+                        <td>${round.protectMark || ''}</td>
+                        <td>${round.betAmount > 0 ? round.betAmount.toFixed(2) : ''}</td>
+                        <td class="result-${round.outcome}">${round.outcome}</td>
+                        <td class="${round.profitLoss >= 0 ? 'result-W' : 'result-L'}">${round.profitLoss !== 0 ? round.profitLoss.toFixed(2) : ''}</td>
+                        <td>${round.cumulativeBalance.toFixed(2)}</td>
+                    </tr>
+                `;
+            }
+            
+            resultsBody.innerHTML = tableHTML;
+            
+            showMessage('模擬完成！', 'success');
+        }
 
         // 驗證輸入
         function validateInputs() {
@@ -1831,27 +1896,27 @@ function displayResults(result) {
         }
 
         // 重置表單
-function resetForm() {
-    totalRoundsInput.value = '100';
-    initialCapitalInput.value = '1000';
-    baseBetInput.value = '10';
-    incrementRateInput.value = '5';
-    // 修改這裡：重置時不預設勾選
-    multiSimulationCheckbox.checked = false;
-    simulationTimesInput.style.display = 'none';
-    simulationTimesInput.value = '1'; // 但保持數值為1
-    manualSequenceTextarea.value = ""; // 修改這裡：手動模式不預設結果
-    
-    clearResults();
-    messageBox.style.display = 'none';
-    exportPNGBtn.style.display = 'none';
-    stopBtnContainer.classList.remove('active');
-    
-    // 重新初始化投注規則
-    initBettingRules();
-    
-    showMessage('表單已重置', 'info');
-}
+        function resetForm() {
+            totalRoundsInput.value = '100';
+            initialCapitalInput.value = '1000';
+            baseBetInput.value = '10';
+            incrementRateInput.value = '5';
+            // 修改這裡：重置時不預設勾選
+            multiSimulationCheckbox.checked = false;
+            simulationTimesInput.style.display = 'none';
+            simulationTimesInput.value = '1'; // 但保持數值為1
+            manualSequenceTextarea.value = ""; // 修改這裡：手動模式不預設結果
+            
+            clearResults();
+            messageBox.style.display = 'none';
+            exportPNGBtn.style.display = 'none';
+            stopBtnContainer.classList.remove('active');
+            
+            // 重新初始化投注規則
+            initBettingRules();
+            
+            showMessage('表單已重置', 'info');
+        }
 
         // 停止模擬處理函數
         function stopSimulationHandler() {
@@ -1957,33 +2022,33 @@ function resetForm() {
         }
 
         // 從本地儲存載入表單資料
-function loadFormDataFromStorage() {
-    const savedData = localStorage.getItem('bettingSimulation_formData');
-    const savedMode = localStorage.getItem('bettingSimulation_mode');
-    
-    if (savedData) {
-        const formData = JSON.parse(savedData);
-        
-        totalRoundsInput.value = formData.totalRounds || '100';
-        initialCapitalInput.value = formData.initialCapital || '1000';
-        baseBetInput.value = formData.baseBet || '10';
-        incrementRateInput.value = formData.incrementRate || '5';
-        // 修改這裡：從本地儲存載入時保持原設定，不預設勾選
-        multiSimulationCheckbox.checked = formData.multiSimulation || false;
-        simulationTimesInput.value = formData.simulationTimes || '1';
-        simulationTimesInput.style.display = formData.multiSimulation ? 'inline-block' : 'none';
-        manualSequenceTextarea.value = formData.manualSequence || "";
-        
-        if (savedMode) {
-            switchMode(savedMode);
+        function loadFormDataFromStorage() {
+            const savedData = localStorage.getItem('bettingSimulation_formData');
+            const savedMode = localStorage.getItem('bettingSimulation_mode');
+            
+            if (savedData) {
+                const formData = JSON.parse(savedData);
+                
+                totalRoundsInput.value = formData.totalRounds || '100';
+                initialCapitalInput.value = formData.initialCapital || '1000';
+                baseBetInput.value = formData.baseBet || '10';
+                incrementRateInput.value = formData.incrementRate || '5';
+                // 修改這裡：從本地儲存載入時保持原設定，不預設勾選
+                multiSimulationCheckbox.checked = formData.multiSimulation || false;
+                simulationTimesInput.value = formData.simulationTimes || '1';
+                simulationTimesInput.style.display = formData.multiSimulation ? 'inline-block' : 'none';
+                manualSequenceTextarea.value = formData.manualSequence || "";
+                
+                if (savedMode) {
+                    switchMode(savedMode);
+                }
+            } else {
+                // 首次使用時，不預設勾選N次模擬
+                multiSimulationCheckbox.checked = false;
+                simulationTimesInput.style.display = 'none';
+                simulationTimesInput.value = '1';
+            }
         }
-    } else {
-        // 首次使用時，不預設勾選N次模擬
-        multiSimulationCheckbox.checked = false;
-        simulationTimesInput.style.display = 'none';
-        simulationTimesInput.value = '1';
-    }
-}
     </script>
 </body>
 </html>
