@@ -221,7 +221,6 @@
             display: flex;
             gap: 15px;
             align-items: center;
-            margin-left: 20px;
         }
 
         .btn {
@@ -678,10 +677,7 @@
                 <div class="manual-button-group">
                     <button class="btn btn-pink" id="toggleModeBtn">
                         <i class="fas fa-exchange-alt"></i> 切換到手動模式
-                    </button>
-                    <button class="btn btn-secondary" id="resetBtn">
-                        <i class="fas fa-redo"></i> 重置
-                    </button>
+                    </button>                   
                 </div>
                 
                 <div class="stop-btn-container" id="stopBtnContainer">
@@ -692,6 +688,9 @@
             </div>
             
             <div class="button-right-group">
+                <button class="btn btn-secondary" id="resetBtn">
+                        <i class="fas fa-redo"></i> 重置
+                </button>
                 <!-- 新增：一鍵COPY按鈕 -->
                 <button class="btn btn-info" id="copyToManualBtn">
                     <i class="fas fa-copy"></i> 一鍵COPY
@@ -2043,7 +2042,6 @@
                     switchMode(savedMode);
                 }
             } else {
-                // 首次使用時，不預設勾選N次模擬
                 multiSimulationCheckbox.checked = false;
                 simulationTimesInput.style.display = 'none';
                 simulationTimesInput.value = '1';
