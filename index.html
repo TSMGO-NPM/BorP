@@ -736,6 +736,8 @@
                             <th>勝負</th>
                             <th>單局盈虧</th>
                             <th>資金情況</th>
+                            <th>關數</th>
+                            <th>注數</th>
                         </tr>
                     </thead>
                     <tbody id="resultsBody">
@@ -894,13 +896,6 @@
 
         // 初始化投注規則（基於Excel表格）
         function initBettingRules() {
-            // 基礎投注表 - 50關
-            // 從你提供的Excel表格中，我們可以看到投注金額的規律：
-            // 1注：20, 20, 30, 30, 40, 40... 每2關增加10
-            // 2注：1注的2倍
-            // 3注：2注的2倍（僅偶數關）
-            // 尾到開頭：1, 1, 1, 1, 1, 1, 3, 1, 5, 3... 等規律
-            
             const baseBet = parseInt(baseBetInput.value) || 10;
             const incrementRate = parseInt(incrementRateInput.value) || 5;
             
@@ -910,25 +905,26 @@
             bettingRules.level3 = {};
             bettingRules.retreatPoints = {};
             
-            // 根據Excel表格中的規律生成規則
+            // 根據提供的Excel表格規則生成
             for (let i = 1; i <= 50; i++) {
-                // 計算關數基數
-                const guanBase = Math.ceil(i / 2); // 每2關為一組
+                // 計算關數基數：每2關為一組，第1-2關為第1組，第3-4關為第2組，依此類推
+                // 組數計算：ceil(i/2)
+                const group = Math.ceil(i / 2);
                 
-                // 1注：每2關增加 incrementRate
-                bettingRules.level1[i] = baseBet + (guanBase - 1) * incrementRate;
+                // 1注：起步注碼 + (組數-1) * 每2關增量
+                // 例如：起步注碼=10，每2關+5，第1關=10，第3關=15，第5關=20...
+                bettingRules.level1[i] = baseBet + (group - 1) * incrementRate;
                 
                 // 2注：1注的2倍
                 bettingRules.level2[i] = bettingRules.level1[i] * 2;
                 
-                // 3注：僅偶數關有，是2注的2倍
+                // 3注：2注的2倍（僅偶數關有）
                 if (i % 2 === 0) {
                     bettingRules.level3[i] = bettingRules.level2[i] * 2;
                 }
                 
-                // 尾到開頭（回退點）規則
-                // 根據Excel表格，回退點有特定規律：
-                // 第1-6關回退到第1關，第7關回退到第3關，第8關回退到第1關，等等
+                // 尾到開頭（回退點）規則 - 基於Excel表格
+                // 根據您提供的圖片，回退點規則如下：
                 if (i <= 6) {
                     bettingRules.retreatPoints[i] = 1;
                 } else if (i === 7) {
@@ -943,15 +939,82 @@
                     bettingRules.retreatPoints[i] = 7;
                 } else if (i === 12) {
                     bettingRules.retreatPoints[i] = 5;
-                } else {
-                    // 之後的規律：每關回退點 = 當前關數 - 2
-                    // 但保持奇數關回退到奇數關，偶數關回退到偶數關
-                    let retreat = i - 2;
-                    if (i % 2 !== retreat % 2) {
-                        retreat -= 1; // 調整為相同奇偶性
-                    }
-                    if (retreat < 1) retreat = 1;
-                    bettingRules.retreatPoints[i] = retreat;
+                } else if (i === 13) {
+                    bettingRules.retreatPoints[i] = 9;
+                } else if (i === 14) {
+                    bettingRules.retreatPoints[i] = 7;
+                } else if (i === 15) {
+                    bettingRules.retreatPoints[i] = 11;
+                } else if (i === 16) {
+                    bettingRules.retreatPoints[i] = 9;
+                } else if (i === 17) {
+                    bettingRules.retreatPoints[i] = 13;
+                } else if (i === 18) {
+                    bettingRules.retreatPoints[i] = 11;
+                } else if (i === 19) {
+                    bettingRules.retreatPoints[i] = 15;
+                } else if (i === 20) {
+                    bettingRules.retreatPoints[i] = 13;
+                } else if (i === 21) {
+                    bettingRules.retreatPoints[i] = 17;
+                } else if (i === 22) {
+                    bettingRules.retreatPoints[i] = 15;
+                } else if (i === 23) {
+                    bettingRules.retreatPoints[i] = 19;
+                } else if (i === 24) {
+                    bettingRules.retreatPoints[i] = 17;
+                } else if (i === 25) {
+                    bettingRules.retreatPoints[i] = 21;
+                } else if (i === 26) {
+                    bettingRules.retreatPoints[i] = 19;
+                } else if (i === 27) {
+                    bettingRules.retreatPoints[i] = 23;
+                } else if (i === 28) {
+                    bettingRules.retreatPoints[i] = 21;
+                } else if (i === 29) {
+                    bettingRules.retreatPoints[i] = 25;
+                } else if (i === 30) {
+                    bettingRules.retreatPoints[i] = 23;
+                } else if (i === 31) {
+                    bettingRules.retreatPoints[i] = 27;
+                } else if (i === 32) {
+                    bettingRules.retreatPoints[i] = 25;
+                } else if (i === 33) {
+                    bettingRules.retreatPoints[i] = 29;
+                } else if (i === 34) {
+                    bettingRules.retreatPoints[i] = 27;
+                } else if (i === 35) {
+                    bettingRules.retreatPoints[i] = 31;
+                } else if (i === 36) {
+                    bettingRules.retreatPoints[i] = 29;
+                } else if (i === 37) {
+                    bettingRules.retreatPoints[i] = 33;
+                } else if (i === 38) {
+                    bettingRules.retreatPoints[i] = 31;
+                } else if (i === 39) {
+                    bettingRules.retreatPoints[i] = 35;
+                } else if (i === 40) {
+                    bettingRules.retreatPoints[i] = 33;
+                } else if (i === 41) {
+                    bettingRules.retreatPoints[i] = 37;
+                } else if (i === 42) {
+                    bettingRules.retreatPoints[i] = 35;
+                } else if (i === 43) {
+                    bettingRules.retreatPoints[i] = 39;
+                } else if (i === 44) {
+                    bettingRules.retreatPoints[i] = 37;
+                } else if (i === 45) {
+                    bettingRules.retreatPoints[i] = 41;
+                } else if (i === 46) {
+                    bettingRules.retreatPoints[i] = 39;
+                } else if (i === 47) {
+                    bettingRules.retreatPoints[i] = 43;
+                } else if (i === 48) {
+                    bettingRules.retreatPoints[i] = 41;
+                } else if (i === 49) {
+                    bettingRules.retreatPoints[i] = 45;
+                } else if (i === 50) {
+                    bettingRules.retreatPoints[i] = 43;
                 }
             }
             
@@ -991,7 +1054,7 @@
             manualModeBtn.addEventListener('click', () => switchMode('manual'));
             toggleModeBtn.addEventListener('click', toggleMode);
             
-            // 多模擬複選框 - 修改這裡
+            // 多模擬複選框
             multiSimulationCheckbox.addEventListener('change', function() {
                 simulationTimesInput.style.display = this.checked ? 'inline-block' : 'none';
                 // 勾選時確保數值為1
@@ -1099,9 +1162,6 @@
                 manualInputArea.classList.add('active');
                 toggleModeBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> 切換到隨機模式';
                 toggleModeBtn.className = 'btn btn-primary';
-                
-                // 修改這裡：移除預設範例資料，保持空白
-                // 讓用戶自己輸入
             }
             
             // 更新停止按鈕可見性
@@ -1225,7 +1285,8 @@
                 }
             }
             
-            // 5. 生成E欄：投注金額（基於Excel表格的三級別投注系統）
+            // 5. 生成E欄：投注金額（基於Excel表格的三注數投注系統）
+            // 按照原VBA代碼邏輯
             let currentGuan = 1;
             let currentLevel = 1;
             let winStreak = 0;
@@ -1233,11 +1294,11 @@
             for (let i = 0; i < totalRounds; i++) {
                 const round = rounds[i];
                 
-                // 記錄當前關數和級別
+                // 記錄當前關數和注數
                 round.currentGuan = currentGuan;
                 round.currentLevel = currentLevel;
                 
-                // 如果沒有V標記或沒有勝負結果，不清除投注金額
+                // 如果沒有V標記或沒有勝負結果，清除投注金額
                 if (round.protectMark !== 'V' || (round.outcome !== 'W' && round.outcome !== 'L')) {
                     round.betAmount = 0;
                     continue;
@@ -1246,7 +1307,7 @@
                 // 限制關數在1-50之間
                 if (currentGuan > 50) currentGuan = 50;
                 
-                // 根據當前級別和關數確定投注金額
+                // 根據當前注數和關數確定投注金額
                 let betAmount = 0;
                 
                 switch (currentLevel) {
@@ -1261,11 +1322,11 @@
                         }
                         break;
                     case 3:
-                        // 級別3僅在偶數關有效
+                        // 注數3僅在偶數關有效
                         if (currentGuan % 2 === 0 && bettingRules.level3[currentGuan]) {
                             betAmount = bettingRules.level3[currentGuan];
                         } else {
-                            // 如果當前是奇數關但級別是3，則使用級別2
+                            // 如果當前是奇數關但注數是3，則使用注數2
                             betAmount = bettingRules.level2[currentGuan] || 0;
                         }
                         break;
@@ -1277,56 +1338,52 @@
                     round.betAmount = 0;
                 }
                 
-                // 更新連勝與關數
+                // 更新連勝與關數 - 按照原VBA代碼邏輯
                 if (round.outcome === 'W') {
-                    winStreak++;
-                    
-                    // 根據Excel表格的規則：
-                    // 1. 贏了之後，級別提升（1→2→3）
-                    // 2. 達到特定連勝後，檢查是否有回退點
-                    // 3. 回退點來自 bettingRules.retreatPoints
+                    winStreak = winStreak + 1;
                     
                     if (currentGuan % 2 === 1) {
                         // 奇數關
                         if (winStreak >= 2 && currentLevel === 2) {
                             // 檢查是否有回退點
                             if (bettingRules.retreatPoints[currentGuan]) {
-                                currentGuan = bettingRules.retreatPoints[currentGuan];
-                                currentLevel = 1;
-                                winStreak = 0;
+                                const retroTo = bettingRules.retreatPoints[currentGuan];
+                                if (retroTo >= 1 && retroTo <= 50) {
+                                    currentGuan = retroTo;
+                                    currentLevel = 1;
+                                    winStreak = 0;
+                                }
                             } else {
-                                // 沒有回退點，繼續提升級別
-                                currentLevel = Math.min(currentLevel + 1, 3);
+                                // 沒有回退點，繼續提升注數
+                                if (currentLevel < 3) currentLevel = currentLevel + 1;
                             }
                         } else {
-                            currentLevel = Math.min(currentLevel + 1, 3);
+                            // 不滿足回退條件，提升注數
+                            if (currentLevel < 3) currentLevel = currentLevel + 1;
                         }
                     } else {
                         // 偶數關
                         if (winStreak >= 3 && currentLevel === 3) {
                             // 檢查是否有回退點
                             if (bettingRules.retreatPoints[currentGuan]) {
-                                currentGuan = bettingRules.retreatPoints[currentGuan];
-                                currentLevel = 1;
-                                winStreak = 0;
-                            } else {
-                                // 沒有回退點，保持級別
-                                // 偶數關級別3是最後一級
+                                const retroTo = bettingRules.retreatPoints[currentGuan];
+                                if (retroTo >= 1 && retroTo <= 50) {
+                                    currentGuan = retroTo;
+                                    currentLevel = 1;
+                                    winStreak = 0;
+                                }
                             }
+                            // 偶數關注數3是最後一級，不回退也不提升
                         } else {
-                            currentLevel = Math.min(currentLevel + 1, 3);
+                            // 不滿足回退條件，提升注數
+                            if (currentLevel < 3) currentLevel = currentLevel + 1;
                         }
                     }
                 } else {
-                    // 輸了，重置
+                    // 輸了，重置：關數+1，注數回1，連勝歸0
                     winStreak = 0;
-                    currentGuan++;
+                    currentGuan = currentGuan + 1;
                     currentLevel = 1;
-                    
-                    // 如果超過50關，回到第1關
-                    if (currentGuan > 50) {
-                        currentGuan = 1;
-                    }
                 }
             }
             
@@ -1450,7 +1507,8 @@
                 }
             }
             
-            // 5. 生成E欄：投注金額（基於Excel表格的三級別投注系統）
+            // 5. 生成E欄：投注金額（基於Excel表格的三注數投注系統）
+            // 按照原VBA代碼邏輯
             let currentGuan = 1;
             let currentLevel = 1;
             let winStreak = 0;
@@ -1458,11 +1516,11 @@
             for (let i = 0; i < totalRounds; i++) {
                 const round = rounds[i];
                 
-                // 記錄當前關數和級別
+                // 記錄當前關數和注數
                 round.currentGuan = currentGuan;
                 round.currentLevel = currentLevel;
                 
-                // 如果沒有V標記或沒有勝負結果，不清除投注金額
+                // 如果沒有V標記或沒有勝負結果，清除投注金額
                 if (round.protectMark !== 'V' || (round.outcome !== 'W' && round.outcome !== 'L')) {
                     round.betAmount = 0;
                     continue;
@@ -1471,7 +1529,7 @@
                 // 限制關數在1-50之間
                 if (currentGuan > 50) currentGuan = 50;
                 
-                // 根據當前級別和關數確定投注金額
+                // 根據當前注數和關數確定投注金額
                 let betAmount = 0;
                 
                 switch (currentLevel) {
@@ -1486,11 +1544,11 @@
                         }
                         break;
                     case 3:
-                        // 級別3僅在偶數關有效
+                        // 注數3僅在偶數關有效
                         if (currentGuan % 2 === 0 && bettingRules.level3[currentGuan]) {
                             betAmount = bettingRules.level3[currentGuan];
                         } else {
-                            // 如果當前是奇數關但級別是3，則使用級別2
+                            // 如果當前是奇數關但注數是3，則使用注數2
                             betAmount = bettingRules.level2[currentGuan] || 0;
                         }
                         break;
@@ -1502,51 +1560,52 @@
                     round.betAmount = 0;
                 }
                 
-                // 更新連勝與關數
+                // 更新連勝與關數 - 按照原VBA代碼邏輯
                 if (round.outcome === 'W') {
-                    winStreak++;
+                    winStreak = winStreak + 1;
                     
                     if (currentGuan % 2 === 1) {
                         // 奇數關
                         if (winStreak >= 2 && currentLevel === 2) {
                             // 檢查是否有回退點
                             if (bettingRules.retreatPoints[currentGuan]) {
-                                currentGuan = bettingRules.retreatPoints[currentGuan];
-                                currentLevel = 1;
-                                winStreak = 0;
+                                const retroTo = bettingRules.retreatPoints[currentGuan];
+                                if (retroTo >= 1 && retroTo <= 50) {
+                                    currentGuan = retroTo;
+                                    currentLevel = 1;
+                                    winStreak = 0;
+                                }
                             } else {
-                                // 沒有回退點，繼續提升級別
-                                currentLevel = Math.min(currentLevel + 1, 3);
+                                // 沒有回退點，繼續提升注數
+                                if (currentLevel < 3) currentLevel = currentLevel + 1;
                             }
                         } else {
-                            currentLevel = Math.min(currentLevel + 1, 3);
+                            // 不滿足回退條件，提升注數
+                            if (currentLevel < 3) currentLevel = currentLevel + 1;
                         }
                     } else {
                         // 偶數關
                         if (winStreak >= 3 && currentLevel === 3) {
                             // 檢查是否有回退點
                             if (bettingRules.retreatPoints[currentGuan]) {
-                                currentGuan = bettingRules.retreatPoints[currentGuan];
-                                currentLevel = 1;
-                                winStreak = 0;
-                            } else {
-                                // 沒有回退點，保持級別
-                                // 偶數關級別3是最後一級
+                                const retroTo = bettingRules.retreatPoints[currentGuan];
+                                if (retroTo >= 1 && retroTo <= 50) {
+                                    currentGuan = retroTo;
+                                    currentLevel = 1;
+                                    winStreak = 0;
+                                }
                             }
+                            // 偶數關注數3是最後一級，不回退也不提升
                         } else {
-                            currentLevel = Math.min(currentLevel + 1, 3);
+                            // 不滿足回退條件，提升注數
+                            if (currentLevel < 3) currentLevel = currentLevel + 1;
                         }
                     }
                 } else {
-                    // 輸了，重置
+                    // 輸了，重置：關數+1，注數回1，連勝歸0
                     winStreak = 0;
-                    currentGuan++;
+                    currentGuan = currentGuan + 1;
                     currentLevel = 1;
-                    
-                    // 如果超過50關，回到第1關
-                    if (currentGuan > 50) {
-                        currentGuan = 1;
-                    }
                 }
             }
             
@@ -1736,6 +1795,8 @@
                         <td class="result-${round.outcome}">${round.outcome}</td>
                         <td class="${round.profitLoss >= 0 ? 'result-W' : 'result-L'}">${round.profitLoss !== 0 ? round.profitLoss.toFixed(2) : ''}</td>
                         <td>${round.cumulativeBalance.toFixed(2)}</td>
+                        <td>${round.currentGuan}</td>
+                        <td>${round.currentLevel}</td>
                     </tr>
                 `;
             }
@@ -1901,11 +1962,10 @@
             initialCapitalInput.value = '1000';
             baseBetInput.value = '10';
             incrementRateInput.value = '5';
-            // 修改這裡：重置時不預設勾選
             multiSimulationCheckbox.checked = false;
             simulationTimesInput.style.display = 'none';
-            simulationTimesInput.value = '1'; // 但保持數值為1
-            manualSequenceTextarea.value = ""; // 修改這裡：手動模式不預設結果
+            simulationTimesInput.value = '1';
+            manualSequenceTextarea.value = "";
             
             clearResults();
             messageBox.style.display = 'none';
@@ -2033,7 +2093,6 @@
                 initialCapitalInput.value = formData.initialCapital || '1000';
                 baseBetInput.value = formData.baseBet || '10';
                 incrementRateInput.value = formData.incrementRate || '5';
-                // 修改這裡：從本地儲存載入時保持原設定，不預設勾選
                 multiSimulationCheckbox.checked = formData.multiSimulation || false;
                 simulationTimesInput.value = formData.simulationTimes || '1';
                 simulationTimesInput.style.display = formData.multiSimulation ? 'inline-block' : 'none';
