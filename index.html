@@ -1054,20 +1054,16 @@
         }
 
         // 切換模式
-        function switchMode(mode) {
-            currentMode = mode;
-            updateUIForMode();
-            
-            // 更新按鈕啟動狀態
-            randomModeBtn.classList.toggle('active', mode === 'random');
-            manualModeBtn.classList.toggle('active', mode === 'manual');
-            
-            // 儲存模式到本地儲存
-            localStorage.setItem('bettingSimulation_mode', mode);
-            
-            // 儲存當前表單資料
-            saveFormDataToStorage();
-        }
+function switchMode(mode) {
+    currentMode = mode;
+    updateUIForMode();
+    
+    // 儲存模式到本地儲存
+    localStorage.setItem('bettingSimulation_mode', mode);
+    
+    // 儲存當前表單資料
+    saveFormDataToStorage();
+}
 
         // 切換模式（通過切換按鈕）
         function toggleMode() {
@@ -1076,29 +1072,30 @@
         }
 
         // 根據當前模式更新UI
-        function updateUIForMode() {
-            if (currentMode === 'random') {
-                totalRoundsLabel.textContent = '局數';
-                totalRoundsInput.style.display = 'block';
-                multiSimulationGroup.style.display = 'flex';
-                manualInputArea.classList.remove('active');
-                toggleModeBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> 切換到手動模式';
-                toggleModeBtn.className = 'btn btn-pink';
-            } else {
-                totalRoundsLabel.textContent = '手動輸入結果';
-                totalRoundsInput.style.display = 'none';
-                multiSimulationGroup.style.display = 'none';
-                manualInputArea.classList.add('active');
-                toggleModeBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> 切換到隨機模式';
-                toggleModeBtn.className = 'btn btn-primary';
-                
-                // 修改這裡：移除預設範例資料，保持空白
-                // 讓用戶自己輸入
-            }
-            
-            // 更新停止按鈕可見性
-            updateStopButtonVisibility();
-        }
+function updateUIForMode() {
+    if (currentMode === 'random') {
+        totalRoundsLabel.textContent = '局數';
+        totalRoundsInput.style.display = 'block';
+        multiSimulationGroup.style.display = 'flex';
+        manualInputArea.classList.remove('active');
+        
+        // 更新模式選擇按鈕的狀態
+        randomModeBtn.classList.add('active');
+        manualModeBtn.classList.remove('active');
+    } else {
+        totalRoundsLabel.textContent = '手動輸入結果';
+        totalRoundsInput.style.display = 'none';
+        multiSimulationGroup.style.display = 'none';
+        manualInputArea.classList.add('active');
+        
+        // 更新模式選擇按鈕的狀態
+        randomModeBtn.classList.remove('active');
+        manualModeBtn.classList.add('active');
+    }
+    
+    // 更新停止按鈕可見性
+    updateStopButtonVisibility();
+}
 
         // 更新停止按鈕可見性
         function updateStopButtonVisibility() {
