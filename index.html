@@ -685,13 +685,14 @@
                 <button class="btn btn-primary" id="runSimulationBtn">
                     <i class="fas fa-play-circle"></i> RUN
                 </button>
+
+                <button class="btn btn-secondary" id="resetBtn">
+                        <i class="fas fa-redo"></i> 重置
+                </button>
                 
                 <div class="manual-button-group">
                     <button class="btn btn-pink" id="toggleModeBtn">
                         <i class="fas fa-exchange-alt"></i> 切換到手動模式
-                    </button>
-                    <button class="btn btn-secondary" id="resetBtn">
-                        <i class="fas fa-redo"></i> 重置
                     </button>
                 </div>
                 
@@ -1982,6 +1983,9 @@
             messageBox.style.display = 'none';
             exportPNGBtn.style.display = 'none';
             stopBtnContainer.classList.remove('active');
+
+            lastRandomResults = [];
+            simulationResults = [];
             
             // 重新初始化投注規則
             initBettingRules();
