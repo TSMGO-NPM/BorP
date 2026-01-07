@@ -19,6 +19,7 @@
             color: #e6e6e6;
             min-height: 100vh;
             padding: 20px;
+            position: relative;
         }
 
         .container {
@@ -168,7 +169,7 @@
 
         textarea {
             width: 100%;
-            height: 150px;
+            height: 80px;
             padding: 15px;
             background-color: #252542;
             border: 1px solid #3a3a5a;
@@ -217,13 +218,6 @@
             flex-wrap: wrap;
         }
 
-        .manual-button-group {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            margin-left: 20px;
-        }
-
         .btn {
             padding: 12px 24px;
             border: none;
@@ -251,15 +245,15 @@
         }
 
         #runSimulationBtn {
-    background: linear-gradient(90deg, #10b981, #059669);
-    color: white;
-}
+            background: linear-gradient(90deg, #10b981, #059669);
+            color: white;
+        }
 
-#runSimulationBtn:hover {
-    background: linear-gradient(90deg, #0da271, #047852);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
-}
+        #runSimulationBtn:hover {
+            background: linear-gradient(90deg, #0da271, #047852);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
 
         .btn-secondary {
             background-color: #3a3a5a;
@@ -302,17 +296,6 @@
             background: linear-gradient(90deg, #e03c3c, #c72222);
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
-        }
-
-        .btn-pink {
-            background: linear-gradient(90deg, #ec4899, #be185d);
-            color: white;
-        }
-
-        .btn-pink:hover {
-            background: linear-gradient(90deg, #e03c8a, #a81752);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4);
         }
 
         .btn-info {
@@ -514,6 +497,302 @@
             border-top: 1px solid #2a2a4a;
         }
 
+        /* 懸浮按鈕樣式 */
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(238, 90, 36, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(238, 90, 36, 0.7);
+        }
+
+        .floating-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 調整後的百家樂系統視窗樣式 - 與主體風格一致 */
+        .baccarat-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 1001;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .baccarat-container {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e6e6e6;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 30px auto;
+            position: relative;
+            border: 1px solid #2a2a4a;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+        }
+
+        .baccarat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #2a2a4a;
+        }
+
+        .baccarat-title {
+            font-size: 24px;
+            color: #4cc9f0;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .baccarat-title i {
+            font-size: 22px;
+        }
+
+        .close-btn {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: linear-gradient(90deg, #e03c3c, #c72222);
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .baccarat-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .baccarat-section {
+            background-color: #252542;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #3a3a5a;
+        }
+
+        .baccarat-section h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #a0a0c0;
+        }
+
+        .road-viewport {
+            background: white;
+            border: 1px solid #333;
+            overflow-x: auto;
+            scrollbar-width: none;
+            border-radius: 6px;
+            padding: 5px;
+        }
+
+        .grid {
+            display: grid;
+            grid-auto-flow: column;
+            background-color: #333;
+            gap: 1px;
+            border: 1px solid #333;
+            width: max-content;
+            align-content: start;
+        }
+
+        .cell {
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .big-road-grid {
+            grid-template-rows: repeat(6, 32px);
+            height: 198px;
+        }
+
+        .bead-plate-grid {
+            grid-template-rows: repeat(6, 36px);
+            height: 222px;
+        }
+
+        .bead {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            color: #fff !important;
+            font-size: 15px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .bead.B { background: linear-gradient(135deg, #d93030, #b32020); }
+        .bead.P { background: linear-gradient(135deg, #2b56bf, #1a3a8f); }
+        .bead.T { background: linear-gradient(135deg, #28a745, #1e7e34); }
+
+        .big-circle {
+            width: 24px;
+            height: 24px;
+            border: 3px solid;
+            border-radius: 50%;
+            box-sizing: border-box;
+        }
+
+        .B { border-color: #d93030; color: #d93030; }
+        .P { border-color: #2b56bf; color: #2b56bf; }
+
+        .tie-slash {
+            position: absolute;
+            width: 80%;
+            height: 2px;
+            background: #28a745;
+            transform: rotate(-45deg);
+            z-index: 1;
+        }
+
+        .tie-num {
+            position: absolute;
+            color: #28a745;
+            font-size: 11px;
+            font-weight: 900;
+            bottom: 2px;
+            right: 4px;
+            z-index: 2;
+            line-height: 1;
+        }
+
+        .baccarat-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #2a2a4a;
+            flex-wrap: wrap;
+        }
+
+        .baccarat-controls button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .baccarat-controls .btn-b {
+            background: linear-gradient(90deg, #d93030, #b32020);
+            color: white;
+        }
+
+        .baccarat-controls .btn-b:hover {
+            background: linear-gradient(90deg, #c52a2a, #9d1a1a);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(217, 48, 48, 0.4);
+        }
+
+        .baccarat-controls .btn-p {
+            background: linear-gradient(90deg, #2b56bf, #1a3a8f);
+            color: white;
+        }
+
+        .baccarat-controls .btn-p:hover {
+            background: linear-gradient(90deg, #254bab, #152a75);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(43, 86, 191, 0.4);
+        }
+
+        .baccarat-controls .btn-t {
+            background: linear-gradient(90deg, #28a745, #1e7e34);
+            color: white;
+        }
+
+        .baccarat-controls .btn-t:hover {
+            background: linear-gradient(90deg, #23923d, #186729);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .baccarat-controls .btn-func {
+            background-color: #3a3a5a;
+            color: #e6e6e6;
+            border: 1px solid #3a3a5a;
+        }
+
+        .baccarat-controls .btn-func:hover {
+            background-color: #4a4a6a;
+            transform: translateY(-2px);
+        }
+
+        .sequence-display {
+            background-color: #252542;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            border: 1px solid #3a3a5a;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .sequence-display h4 {
+            margin: 0 0 10px 0;
+            color: #4cc9f0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .sequence-text {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
         @media (max-width: 1100px) {
             .button-section {
                 flex-direction: column;
@@ -527,8 +806,9 @@
                 justify-content: center;
             }
             
-            .manual-button-group {
-                margin-left: 0;
+            .baccarat-container {
+                margin: 10px;
+                padding: 15px;
             }
         }
 
@@ -556,19 +836,30 @@
                 justify-content: center;
             }
             
-            .manual-button-group {
-                flex-direction: column;
-                width: 100%;
-                margin-left: 0;
-                margin-top: 10px;
-            }
-            
             .summary-cards {
                 grid-template-columns: 1fr;
             }
             
             .stop-btn-container {
                 width: 100%;
+            }
+            
+            .floating-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .baccarat-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .baccarat-controls button {
+                width: 100%;
+                max-width: 300px;
             }
         }
 
@@ -589,6 +880,23 @@
             
             .export-section {
                 flex-direction: column;
+            }
+            
+            .floating-btn {
+                bottom: 15px;
+                right: 15px;
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+            
+            .baccarat-container {
+                padding: 15px;
+            }
+            
+            .baccarat-controls button {
+                padding: 8px 15px;
+                font-size: 14px;
             }
         }
     </style>
@@ -623,8 +931,8 @@
     
     <div class="container" style="display: none;">
         <header>
-            <h1><i class="fas fa-dice"></i> BorP模擬系統 V0.1</h1>
-            <p class="subtitle">模擬遊戲</p>
+            <h1><i class="fas fa-dice"></i> BorP模擬系統 V1.0</h1>
+            <p class="subtitle">I have not come for what you hoped to do, I've come for what you've done.</p>
         </header>
 
         <div class="input-section">
@@ -662,9 +970,9 @@
             </div>
 
             <div class="textarea-group" id="manualInputArea">
-                <label for="manualSequence">手動輸入A/B序列（每行一個A或B）</label>
-                <textarea id="manualSequence" placeholder="A&#10;B&#10;A&#10;A&#10;B&#10;B&#10;A"></textarea>
-                <p class="textarea-note">注意：每行只能輸入A或B，其他字元將被忽略</p>
+                <label for="manualSequence">手動輸入A/B序列（直接輸入如：ABAABAB）</label>
+                <textarea id="manualSequence" placeholder="例如：ABAABAB 或 AABBBAA"></textarea>
+                <p class="textarea-note">注意：直接輸入A和B的序列，不需要分行。只會識別A和B字符，其他字符將被忽略。</p>
             </div>
         </div>
 
@@ -687,14 +995,8 @@
                 </button>
 
                 <button class="btn btn-secondary" id="resetBtn">
-                        <i class="fas fa-redo"></i> 重置
+                    <i class="fas fa-redo"></i> 重置
                 </button>
-                
-                <div class="manual-button-group">
-                    <button class="btn btn-pink" id="toggleModeBtn">
-                        <i class="fas fa-exchange-alt"></i> 切換到手動模式
-                    </button>
-                </div>
                 
                 <div class="stop-btn-container" id="stopBtnContainer">
                     <button class="btn btn-danger" id="stopSimulationBtn">
@@ -764,6 +1066,51 @@
         </footer>
     </div>
 
+    <!-- 懸浮按鈕 -->
+    <button class="floating-btn" id="baccaratBtn" title="查看路紙">
+        <i class="fas fa-chart-line"></i>
+    </button>
+
+    <!-- 百家樂系統視窗 -->
+    <div class="baccarat-overlay" id="baccaratOverlay">
+        <div class="baccarat-container">
+            <div class="baccarat-header">
+                <h2 class="baccarat-title"><i class="fas fa-cards"></i> 大路&珠盤路</h2>
+                <button class="close-btn" id="closeBaccaratBtn">&times;</button>
+            </div>
+            
+            <div class="baccarat-content">
+                <div class="sequence-display">
+                    <h4>轉換結果序列 (A=庄, B=閒):</h4>
+                    <div class="sequence-text" id="convertedSequence"></div>
+                </div>
+                
+                <div class="baccarat-section">
+                    <h3>大路</h3>
+                    <div class="road-viewport">
+                        <div id="baccaratBigRoad" class="grid big-road-grid"></div>
+                    </div>
+                </div>
+                
+                <div class="baccarat-section">
+                    <h3>珠盤路</h3>
+                    <div class="road-viewport">
+                        <div id="baccaratBeadPlate" class="grid bead-plate-grid"></div>
+                    </div>
+                </div>
+                
+                <div class="baccarat-controls">
+                    <button class="btn-b" onclick="addBaccaratResult('B')"><i class="fas fa-chess-king"></i> 庄 (1)</button>
+                    <button class="btn-p" onclick="addBaccaratResult('P')"><i class="fas fa-chess-pawn"></i> 閒 (2)</button>
+                    <button class="btn-t" onclick="addBaccaratResult('T')"><i class="fas fa-handshake"></i> 和 (3)</button>
+                    <button class="btn-func" onclick="undoBaccaratResult()"><i class="fas fa-undo"></i> 退一步 (Backspace)</button>
+                    <button class="btn-func" onclick="resetBaccarat()"><i class="fas fa-redo"></i> 重開</button>
+                    <button class="btn-func" onclick="copyBaccaratSequence()"><i class="fas fa-copy"></i> 複製序列</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script>
         // 全域變數
@@ -778,6 +1125,9 @@
         let isSimulating = false;
         let stopSimulation = false;
         let lastRandomResults = []; // 儲存上一次隨機模擬的結果
+        
+        // 百家樂系統變數
+        let baccaratHistory = []; // 百家樂結果歷史
 
         // DOM元素
         const randomModeBtn = document.getElementById('randomModeBtn');
@@ -794,7 +1144,6 @@
         const manualSequenceTextarea = document.getElementById('manualSequence');
         const runSimulationBtn = document.getElementById('runSimulationBtn');
         const resetBtn = document.getElementById('resetBtn');
-        const toggleModeBtn = document.getElementById('toggleModeBtn');
         const stopBtnContainer = document.getElementById('stopBtnContainer');
         const stopSimulationBtn = document.getElementById('stopSimulationBtn');
         const messageBox = document.getElementById('messageBox');
@@ -808,7 +1157,15 @@
         const resultsBody = document.getElementById('resultsBody');
         const exportPNGBtn = document.getElementById('exportPNGBtn');
         const exportDataBtn = document.getElementById('exportDataBtn');
-        const copyToManualBtn = document.getElementById('copyToManualBtn'); // 新增：一鍵COPY按鈕
+        const copyToManualBtn = document.getElementById('copyToManualBtn');
+        
+        // 百家樂相關DOM元素
+        const baccaratBtn = document.getElementById('baccaratBtn');
+        const baccaratOverlay = document.getElementById('baccaratOverlay');
+        const closeBaccaratBtn = document.getElementById('closeBaccaratBtn');
+        const convertedSequenceEl = document.getElementById('convertedSequence');
+        const baccaratBigRoadEl = document.getElementById('baccaratBigRoad');
+        const baccaratBeadPlateEl = document.getElementById('baccaratBeadPlate');
 
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
@@ -822,7 +1179,7 @@
             
             // 預設帳密
             const DEFAULT_USERNAME = 'admin';
-            const DEFAULT_PASSWORD = 'admin1234';
+            const DEFAULT_PASSWORD = 'admin2026';
             
             // 檢查是否已經登入
             const isLoggedIn = localStorage.getItem('borp_logged_in') === 'true';
@@ -1064,7 +1421,6 @@
             // 模式切換
             randomModeBtn.addEventListener('click', () => switchMode('random'));
             manualModeBtn.addEventListener('click', () => switchMode('manual'));
-            toggleModeBtn.addEventListener('click', toggleMode);
             
             // 多模擬複選框
             multiSimulationCheckbox.addEventListener('change', function() {
@@ -1092,9 +1448,291 @@
             // 新增：一鍵COPY按鈕事件
             copyToManualBtn.addEventListener('click', copyToManualHandler);
             
+            // 百家樂系統事件
+            baccaratBtn.addEventListener('click', showBaccaratSystem);
+            closeBaccaratBtn.addEventListener('click', hideBaccaratSystem);
+            
+            // 百家樂鍵盤快捷鍵
+            document.addEventListener('keydown', handleBaccaratKeyboard);
+            
             // 從本地儲存載入資料
             loadBettingRulesFromStorage();
             loadFormDataFromStorage();
+            
+            // 載入百家樂歷史
+            loadBaccaratHistory();
+        }
+
+        // 顯示百家樂系統
+        function showBaccaratSystem() {
+            if (simulationResults.length === 0 || !simulationResults[0].rounds || simulationResults[0].rounds.length === 0) {
+                showMessage('請先執行模擬', 'warning');
+                return;
+            }
+            
+            // 自動轉換模擬結果為百家樂序列
+            convertToBaccarat();
+            
+            baccaratOverlay.style.display = 'block';
+            document.body.style.overflow = 'hidden'; // 防止背景滾動
+        }
+
+        // 隱藏百家樂系統
+        function hideBaccaratSystem() {
+            baccaratOverlay.style.display = 'none';
+            document.body.style.overflow = 'auto'; // 恢復滾動
+        }
+
+        // 處理百家樂鍵盤快捷鍵
+        function handleBaccaratKeyboard(e) {
+            // 只有在百家樂系統顯示時才處理
+            if (baccaratOverlay.style.display !== 'block') return;
+            
+            if (e.key === '1' || e.key === 'b' || e.key === 'B') {
+                addBaccaratResult('B');
+                e.preventDefault();
+            } else if (e.key === '2' || e.key === 'p' || e.key === 'P') {
+                addBaccaratResult('P');
+                e.preventDefault();
+            } else if (e.key === '3' || e.key === 't' || e.key === 'T') {
+                addBaccaratResult('T');
+                e.preventDefault();
+            } else if (e.key === 'Backspace') {
+                undoBaccaratResult();
+                e.preventDefault();
+            } else if (e.key === 'Escape') {
+                hideBaccaratSystem();
+                e.preventDefault();
+            }
+        }
+
+        // 將模擬結果轉換為百家樂序列
+        function convertToBaccarat() {
+            const result = simulationResults[0];
+            const rounds = result.rounds;
+            
+            // 清空歷史
+            baccaratHistory = [];
+            
+            // 轉換A/B為庄/閒 (A=庄, B=閒)
+            rounds.forEach(round => {
+                if (round.result === 'A') {
+                    baccaratHistory.push('B'); // A -> 庄
+                } else if (round.result === 'B') {
+                    baccaratHistory.push('P'); // B -> 閒
+                }
+            });
+            
+            // 更新顯示
+            updateBaccaratDisplay();
+            saveBaccaratHistory();
+        }
+
+        // 更新百家樂顯示
+        function updateBaccaratDisplay() {
+            // 更新序列顯示
+            const sequenceText = baccaratHistory.map((result, index) => {
+                const num = (index + 1).toString().padStart(3, '0');
+                let colorClass = '';
+                if (result === 'B') colorClass = 'color: #d93030;';
+                else if (result === 'P') colorClass = 'color: #2b56bf;';
+                else if (result === 'T') colorClass = 'color: #28a745;';
+                return `<span style="${colorClass}">${num}: ${getBaccaratResultName(result)}</span>`;
+            }).join('\n');
+            
+            convertedSequenceEl.innerHTML = sequenceText;
+            
+            // 渲染大路
+            renderBaccaratBigRoad();
+            
+            // 渲染珠盤路
+            renderBaccaratBeadPlate();
+        }
+
+        // 獲取百家樂結果名稱
+        function getBaccaratResultName(result) {
+            switch(result) {
+                case 'B': return '庄';
+                case 'P': return '閒';
+                case 'T': return '和';
+                default: return '?';
+            }
+        }
+
+        // 渲染百家樂大路
+        function renderBaccaratBigRoad() {
+            const bigRoadData = getBigRoadDataForBaccarat(baccaratHistory);
+            baccaratBigRoadEl.innerHTML = '';
+            
+            const maxC = Math.max(30, bigRoadData.reduce((acc, d) => Math.max(acc, d.c), 0) + 5);
+            baccaratBigRoadEl.style.gridTemplateColumns = `repeat(${maxC + 1}, 32px)`;
+            
+            // 創建所有格子
+            for(let i = 0; i < (maxC + 1) * 6; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                baccaratBigRoadEl.appendChild(cell);
+            }
+            
+            // 填充資料
+            bigRoadData.forEach(d => {
+                const targetIndex = d.c * 6 + d.r;
+                if (targetIndex >= 0 && targetIndex < baccaratBigRoadEl.children.length) {
+                    const target = baccaratBigRoadEl.children[targetIndex];
+                    
+                    // 畫庄/閒圈
+                    const circ = document.createElement('div');
+                    circ.className = `big-circle ${d.type}`;
+                    target.appendChild(circ);
+                    
+                    // 畫和局斜線與數字
+                    if(d.tie > 0) {
+                        const slash = document.createElement('div');
+                        slash.className = 'tie-slash';
+                        target.appendChild(slash);
+                        
+                        if(d.tie > 1) {
+                            const num = document.createElement('div');
+                            num.className = 'tie-num';
+                            num.innerText = d.tie;
+                            target.appendChild(num);
+                        }
+                    }
+                }
+            });
+        }
+
+        // 為百家樂歷史生成大路資料
+        function getBigRoadDataForBaccarat(input) {
+            let matrix = [], results = [], lastW = null, lastP = {r:0, c:0}, isH = false;
+            
+            input.forEach(res => {
+                if (res === 'T') { 
+                    if (results.length > 0) results[results.length-1].tie++; 
+                    return; 
+                }
+                
+                let r, c;
+                if (!lastW) { 
+                    r = 0; 
+                    c = 0; 
+                } else if (res === lastW) {
+                    if (isH) { 
+                        r = lastP.r; 
+                        c = lastP.c + 1; 
+                    } else { 
+                        r = lastP.r + 1; 
+                        c = lastP.c; 
+                        if(r >= 6 || (matrix[c] && matrix[c][r])) { 
+                            r = lastP.r; 
+                            c = lastP.c + 1; 
+                            isH = true; 
+                        } 
+                    }
+                } else { 
+                    r = 0; 
+                    c = 0; 
+                    isH = false; 
+                    while(matrix[c] && matrix[c][0]) c++; 
+                }
+                
+                if(!matrix[c]) matrix[c] = Array(6).fill(null);
+                matrix[c][r] = res; 
+                lastP = {r, c}; 
+                lastW = res;
+                results.push({r, c, type: res, tie: 0});
+            });
+            
+            return results;
+        }
+
+        // 渲染百家樂珠盤路
+        function renderBaccaratBeadPlate() {
+            baccaratBeadPlateEl.innerHTML = '';
+            const cols = Math.max(28, Math.ceil(baccaratHistory.length / 6) + 1);
+            baccaratBeadPlateEl.style.gridTemplateColumns = `repeat(${cols}, 36px)`;
+            
+            // 創建所有格子
+            for(let i = 0; i < cols * 6; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                baccaratBeadPlateEl.appendChild(cell);
+            }
+            
+            // 填充資料
+            baccaratHistory.forEach((type, index) => {
+                const col = Math.floor(index / 6);
+                const row = index % 6;
+                const targetIndex = col * 6 + row;
+                
+                if (targetIndex >= 0 && targetIndex < baccaratBeadPlateEl.children.length) {
+                    const cell = baccaratBeadPlateEl.children[targetIndex];
+                    
+                    if(type) {
+                        const bead = document.createElement('div');
+                        bead.className = `bead ${type}`;
+                        
+                        if (type === 'B') bead.innerText = '庄';
+                        else if (type === 'P') bead.innerText = '閒';
+                        else if (type === 'T') bead.innerText = '和';
+                        
+                        cell.appendChild(bead);
+                    }
+                }
+            });
+        }
+
+        // 添加百家樂結果
+        function addBaccaratResult(type) {
+            baccaratHistory.push(type);
+            updateBaccaratDisplay();
+            saveBaccaratHistory();
+        }
+
+        // 撤銷最後一個百家樂結果
+        function undoBaccaratResult() {
+            if (baccaratHistory.length > 0) {
+                baccaratHistory.pop();
+                updateBaccaratDisplay();
+                saveBaccaratHistory();
+            }
+        }
+
+        // 重置百家樂
+        function resetBaccarat() {
+            if (confirm('重設路紙？')) {
+                baccaratHistory = [];
+                updateBaccaratDisplay();
+                saveBaccaratHistory();
+            }
+        }
+
+        // 複製百家樂序列
+        function copyBaccaratSequence() {
+            const sequenceText = baccaratHistory.map((result, index) => {
+                return `${index + 1}: ${getBaccaratResultName(result)}`;
+            }).join('\n');
+            
+            navigator.clipboard.writeText(sequenceText).then(() => {
+                showMessage('百家樂序列已複製到剪貼簿', 'success');
+            }).catch(err => {
+                console.error('複製失敗:', err);
+                showMessage('複製失敗，請手動複製', 'error');
+            });
+        }
+
+        // 儲存百家樂歷史到本地儲存
+        function saveBaccaratHistory() {
+            localStorage.setItem('baccarat_history', JSON.stringify(baccaratHistory));
+        }
+
+        // 從本地儲存載入百家樂歷史
+        function loadBaccaratHistory() {
+            const savedHistory = localStorage.getItem('baccarat_history');
+            if (savedHistory) {
+                baccaratHistory = JSON.parse(savedHistory);
+                // 不需要立即更新顯示，會在需要時更新
+            }
         }
 
         // 一鍵COPY處理函數
@@ -1106,15 +1744,15 @@
             
             const result = simulationResults[0];
             
-            // 提取所有A/B結果
-            const abSequence = result.rounds.map(round => round.result).join('\n');
+            // 提取所有A/B結果並轉換為一行字符串
+            const abSequence = result.rounds.map(round => round.result).join('');
             
             // 複製到剪貼簿
             navigator.clipboard.writeText(abSequence).then(() => {
                 // 切換到手動模式
                 switchMode('manual');
                 
-                // 將結果貼到文字框中
+                // 將結果貼到文字框中（一行格式）
                 manualSequenceTextarea.value = abSequence;
                 
                 showMessage('A/B序列已複製並切換到手動模式！', 'success');
@@ -1127,7 +1765,7 @@
                     document.execCommand('copy');
                     // 切換到手動模式
                     switchMode('manual');
-                    // 將結果貼到文字框中
+                    // 將結果貼到文字框中（一行格式）
                     manualSequenceTextarea.value = abSequence;
                     showMessage('A/B序列已複製並切換到手動模式！', 'success');
                 } catch (e) {
@@ -1152,12 +1790,6 @@
             saveFormDataToStorage();
         }
 
-        // 切換模式（通過切換按鈕）
-        function toggleMode() {
-            const newMode = currentMode === 'random' ? 'manual' : 'random';
-            switchMode(newMode);
-        }
-
         // 根據當前模式更新UI
         function updateUIForMode() {
             if (currentMode === 'random') {
@@ -1165,15 +1797,11 @@
                 totalRoundsInput.style.display = 'block';
                 multiSimulationGroup.style.display = 'flex';
                 manualInputArea.classList.remove('active');
-                toggleModeBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> 切換到手動模式';
-                toggleModeBtn.className = 'btn btn-pink';
             } else {
                 totalRoundsLabel.textContent = '手動輸入結果';
                 totalRoundsInput.style.display = 'none';
                 multiSimulationGroup.style.display = 'none';
                 manualInputArea.classList.add('active');
-                toggleModeBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> 切換到隨機模式';
-                toggleModeBtn.className = 'btn btn-primary';
             }
             
             // 更新停止按鈕可見性
@@ -1451,15 +2079,20 @@
         function runManualSimulation(initialCapital) {
             // 解析手動輸入的A/B序列
             const inputText = manualSequenceTextarea.value.trim();
-            const lines = inputText.split('\n');
             
-            // 提取有效的A/B序列
+            if (!inputText) {
+                showMessage('請輸入A/B序列', 'error');
+                return null;
+            }
+            
+            // 提取有效的A/B序列 - 現在只從一行中提取
             const validResults = [];
-            for (let line of lines) {
-                const trimmed = line.trim().toUpperCase();
-                if (trimmed === 'A' || trimmed === 'B') {
-                    validResults.push(trimmed);
+            for (let i = 0; i < inputText.length; i++) {
+                const char = inputText[i].toUpperCase();
+                if (char === 'A' || char === 'B') {
+                    validResults.push(char);
                 }
+                // 忽略其他字符
             }
             
             if (validResults.length === 0) {
@@ -1853,12 +2486,10 @@
                     return false;
                 }
                 
-                const lines = inputText.split('\n');
                 let validCount = 0;
-                
-                for (let line of lines) {
-                    const trimmed = line.trim().toUpperCase();
-                    if (trimmed === 'A' || trimmed === 'B') {
+                for (let i = 0; i < inputText.length; i++) {
+                    const char = inputText[i].toUpperCase();
+                    if (char === 'A' || char === 'B') {
                         validCount++;
                     }
                 }
